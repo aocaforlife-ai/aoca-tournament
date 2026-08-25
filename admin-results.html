@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AOCA Admin Results</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;background:#080b12;color:#fff;
+font-family:Arial,sans-serif
+}
+.page{
+width:100%;max-width:900px;margin:auto;
+padding:30px 16px 100px
+}
+h1{margin:0 0 8px;font-size:30px}
+.subtitle{color:#8993a8;font-size:14px;margin-bottom:25px}
+.card{
+background:#111722;border:1px solid #293246;
+border-radius:16px;padding:20px;margin-bottom:20px
+}
+.card h2{margin:0 0 18px;font-size:21px}
+label{
+display:block;color:#8993a8;font-size:12px;
+margin:14px 0 7px
+}
+select,input{
+width:100%;height:48px;padding:0 12px;
+background:#171e2c;color:#fff;
+border:1px solid #303a4f;border-radius:10px;
+font-size:15px
+}
+button{
+width:100%;height:50px;margin-top:20px;
+background:#7c8cff;color:#080b12;border:0;
+border-radius:10px;font-size:14px;font-weight:900
+}
+button:disabled{opacity:.5}
+.status{
+margin-top:18px;padding:13px;border-radius:10px;
+background:rgba(124,140,255,.1);
+border:1px solid rgba(124,140,255,.2);
+color:#aeb7ff;font-size:13px
+}
+.status.success{
+background:rgba(70,220,130,.1);
+border-color:rgba(70,220,130,.3);
+color:#70e09b
+}
+.status.error{
+background:rgba(255,80,80,.1);
+border-color:rgba(255,80,80,.3);
+color:#ff8585
+}
+.status.warning{
+background:rgba(245,199,107,.1);
+border-color:rgba(245,199,107,.3);
+color:#f5c76b
+}
+.player{
+background:#171e2c;border:1px solid #293246;
+border-radius:14px;padding:16px;margin-bottom:14px
+}
+.player-name{font-size:17px;font-weight:900}
+.player-uid{color:#8993a8;font-size:11px;margin-top:5px}
+.grid{
+display:grid;grid-template-columns:repeat(4,1fr);
+gap:10px;margin-top:15px
+}
+.total{
+margin-top:14px;padding-top:12px;
+border-top:1px solid #293246;
+color:#70e09b;font-size:17px;font-weight:900
+}
+.empty{text-align:center;color:#8993a8;padding:30px 10px}
+@media(max-width:650px){
+.page{padding:25px 14px 80px}
+h1{font-size:27px}
+.grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+<h1>AOCA Admin Results</h1>
+
+<p class="subtitle">
+Enter and save tournament match results.
+</p>
+
+<section class="card">
+
+<h2>Select Tournament</h2>
+
+<label for="tournament">Tournament</label>
+
+<select id="tournament">
+<option value="">Loading tournaments...</option>
+</select>
+
+<label for="match">Match</label>
+
+<select id="match" disabled>
+<option value="">Select tournament first</option>
+</select>
+
+<button id="load" type="button" disabled>
+LOAD PLAYERS
+</button>
+
+<div id="status" class="status">
+Starting...
+</div>
+
+</section>
+
+<section id="resultsCard" class="card" style="display:none">
+
+<h2>Player Results</h2>
+
+<div id="players"></div>
+
+<button id="save" type="button">
+SAVE ALL RESULTS
+</button>
+
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+"use strict";
+
+/* SUPABASE */
+
+const db=window.supabase.createClient(
+"https://onvcwcaimtazjlaysvvv.supabase.co",
+"sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX"
+);
+
+/* ELEMENTS */
+
+const tournament=document.getElementById("tournament");
+const match=document.getElementById("match");
+const load=document.getElementById("load");
+const save=document.getElementById("save");
+const players=document.getElementById("players");
+const status=document.getElementById("status");
+const resultsCard=document.getElementById("resultsCard");
+
+/* DATA */
+
+let playerData=[];
+let existing=[];
+let currentMatch=null;
+
+/* HELPERS */
+
+function setStatus(text,type){
+status.textContent=text;
+status.className="status";
+if(type)status.classList.add(type);
+}
+
+function num(value){
+const n=Number(value);
+return Number.isFinite(n)&&n>=0?n:0;
+}
+
+function esc(value){
+return String(value||"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+/* LOAD TOURNAMENTS */
+
+async function loadTournaments(){
+
+try{
+
+const r=await db
+.from("tournaments")
+.select("id,name,game")
+.order("created_at",{ascending:false});
+
+if(r.error)throw r.error;
+
+const list=r.data||[];
+
+tournament.innerHTML=
+"<option value=''>Select tournament</option>";
+
+list.forEach(t=>{
+
+const o=document.createElement("option");
+
+o.value=t.id;
+o.textContent=(t.name||"Tournament")+
+" - "+(t.game||"");
+
+tournament.appendChild(o);
+
+});
+
+setStatus(
+list.length?
+"Select a tournament.":
+"No tournaments found.",
+list.length?"":"error"
+);
+
+}catch(e){
+
+console.error(e);
+
+setStatus(
+"Unable to load tournaments: "+e.message,
+"error"
+);
+
+}
+
+}
+
+/* TOURNAMENT */
+
+tournament.addEventListener("change",async()=>{
+
+match.disabled=true;
+load.disabled=true;
+players.innerHTML="";
+resultsCard.style.display="none";
+currentMatch=null;
+
+if(!tournament.value){
+
+match.innerHTML=
+"<option value=''>Select tournament first</option>";
+
+setStatus("Select a tournament.");
+return;
+
+}
+
+match.innerHTML=
+"<option value=''>Loading matches...</option>";
+
+try{
+
+const r=await db
+.from("matches")
+.select("id,match_number,status")
+.eq("tournament_id",tournament.value)
+.order("match_number");
+
+if(r.error)throw r.error;
+
+const list=r.data||[];
+
+match.innerHTML=
+"<option value=''>Select match</option>";
+
+list.forEach(m=>{
+
+const o=document.createElement("option");
+
+o.value=m.id;
+
+o.textContent=
+"Match #"+m.match_number+
+" - "+(m.status||"scheduled");
+
+match.appendChild(o);
+
+});
+
+match.disabled=!list.length;
+
+setStatus(
+list.length?
+"Select a match.":
+"No matches found.",
+list.length?"":"error"
+);
+
+}catch(e){
+
+console.error(e);
+
+setStatus(
+"Unable to load matches: "+e.message,
+"error"
+);
+
+}
+
+});
+
+/* MATCH */
+
+match.addEventListener("change",async()=>{
+
+load.disabled=!match.value;
+players.innerHTML="";
+resultsCard.style.display="none";
+currentMatch=null;
+
+if(!match.value){
+setStatus("Select a match.");
+return;
+}
+
+try{
+
+const r=await db
+.from("matches")
+.select("id,match_number,status")
+.eq("id",match.value)
+.maybeSingle();
+
+if(r.error)throw r.error;
+
+currentMatch=r.data;
+
+if(
+currentMatch &&
+String(currentMatch.status||"").toLowerCase()==="completed"
+){
+
+setStatus(
+"This match is already completed. You can edit results.",
+"warning"
+);
+
+}else{
+
+setStatus("Press LOAD PLAYERS.");
+
+}
+
+}catch(e){
+
+setStatus(
+"Unable to check match: "+e.message,
+"error"
+);
+
+}
+
+});
+
+/* LOAD PLAYERS */
+
+load.addEventListener("click",async()=>{
+
+load.disabled=true;
+load.textContent="LOADING...";
+
+try{
+
+const [reg,res]=await Promise.all([
+
+db.from("registrations")
+.select(
+"id,user_id,team_id,in_game_name,game_uid,payment_status"
+)
+.eq("tournament_id",tournament.value)
+.eq("payment_status","paid"),
+
+db.from("results")
+.select(
+"id,match_id,user_id,team_id,placement,kills,placement_points,bonus_points,total_points"
+)
+.eq("match_id",match.value)
+
+]);
+
+if(reg.error)throw reg.error;
+if(res.error)throw res.error;
+
+playerData=reg.data||[];
+existing=res.data||[];
+
+render();
+
+resultsCard.style.display="block";
+
+setStatus(
+playerData.length+
+" paid player(s) loaded.",
+playerData.length?"success":"error"
+);
+
+}catch(e){
+
+console.error(e);
+
+setStatus(
+"Unable to load players: "+e.message,
+"error"
+);
+
+}finally{
+
+load.disabled=false;
+load.textContent="LOAD PLAYERS";
+
+}
+
+});
+
+/* RENDER */
+
+function render(){
+
+players.innerHTML="";
+
+if(!playerData.length){
+
+players.innerHTML=
+"<div class='empty'>No paid players found.</div>";
+
+return;
+
+}
+
+playerData.forEach(player=>{
+
+const old=existing.find(
+r=>r.user_id===player.user_id
+);
+
+const row=document.createElement("div");
+
+row.className="player";
+
+row.dataset.userId=player.user_id;
+row.dataset.teamId=player.team_id||"";
+row.dataset.resultId=old?old.id:"";
+
+row.innerHTML=
+
+"<div class='player-name'>"+
+esc(player.in_game_name||"Player")+
+"</div>"+
+
+"<div class='player-uid'>UID: "+
+esc(player.game_uid||"-")+
+"</div>"+
+
+"<div class='grid'>"+
+
+field(
+"Placement",
+"placement",
+old?old.placement:0
+)+
+
+field(
+"Kills",
+"kills",
+old?old.kills:0
+)+
+
+field(
+"Placement Points",
+"pp",
+old?old.placement_points:0
+)+
+
+field(
+"Bonus Points",
+"bp",
+old?old.bonus_points:0
+)+
+
+"</div>"+
+
+"<div class='total'>Total: "+
+"<span class='totalValue'>"+
+num(old?old.total_points:0)+
+"</span></div>";
+
+players.appendChild(row);
+
+row.querySelectorAll("input").forEach(input=>{
+
+input.addEventListener("input",()=>{
+updateTotal(row);
+});
+
+});
+
+});
+
+}
+
+/* FIELD */
+
+function field(label,cls,value){
+
+return "<div>"+
+"<label>"+label+"</label>"+
+"<input class='"+cls+
+"' type='number' min='0' value='"+
+num(value)+"'>"+
+"</div>";
+
+}
+
+/* TOTAL */
+
+function updateTotal(row){
+
+const total=
+num(row.querySelector(".kills").value)+
+num(row.querySelector(".pp").value)+
+num(row.querySelector(".bp").value);
+
+row.querySelector(".totalValue").textContent=total;
+
+}
+
+/* SAVE */
+
+save.addEventListener("click",async()=>{
+
+const rows=[
+...players.querySelectorAll(".player")
+];
+
+if(!rows.length){
+
+setStatus("No players to save.","error");
+return;
+
+}
+
+save.disabled=true;
+save.textContent="SAVING...";
+
+try{
+
+/* SAVE RESULTS */
+
+for(const row of rows){
+
+const payload={
+
+match_id:match.value,
+
+user_id:row.dataset.userId,
+
+team_id:
+row.dataset.teamId||null,
+
+placement:num(
+row.querySelector(".placement").value
+),
+
+kills:num(
+row.querySelector(".kills").value
+),
+
+placement_points:num(
+row.querySelector(".pp").value
+),
+
+bonus_points:num(
+row.querySelector(".bp").value
+)
+
+};
+
+let r;
+
+if(row.dataset.resultId){
+
+r=await db
+.from("results")
+.update(payload)
+.eq("id",row.dataset.resultId);
+
+}else{
+
+r=await db
+.from("results")
+.insert(payload);
+
+}
+
+if(r.error)throw r.error;
+
+}
+
+/* COMPLETE MATCH */
+
+setStatus("Results saved. Completing match...");
+
+const update=await db
+.from("matches")
+.update({status:"completed"})
+.eq("id",match.value);
+
+if(update.error)throw update.error;
+
+/* RELOAD RESULTS */
+
+const fresh=await db
+.from("results")
+.select(
+"id,match_id,user_id,team_id,placement,kills,placement_points,bonus_points,total_points"
+)
+.eq("match_id",match.value);
+
+if(fresh.error)throw fresh.error;
+
+existing=fresh.data||[];
+
+/* UPDATE MATCH UI */
+
+const option=
+match.options[match.selectedIndex];
+
+if(option){
+
+const number=currentMatch?
+currentMatch.match_number:"";
+
+option.textContent=
+"Match #"+number+" - completed";
+
+}
+
+if(currentMatch)
+currentMatch.status="completed";
+
+render();
+
+setStatus(
+"Results saved and match completed successfully! 🏆",
+"success"
+);
+
+}catch(e){
+
+console.error(
+"AOCA SAVE ERROR:",
+e
+);
+
+setStatus(
+"Unable to save results: "+e.message,
+"error"
+);
+
+}finally{
+
+save.disabled=false;
+save.textContent="SAVE ALL RESULTS";
+
+}
+
+});
+
+/* START */
+
+loadTournaments();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - AOCA Tournament</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="logo">
+        AOCA
+        <span>TOURNAMENT</span>
+    </div>
+
+    <button
+        class="login-btn"
+        id="loginButton"
+        type="button"
+    >
+        Login
+    </button>
+
+</header>
+
+<main class="register-page">
+
+    <button
+        class="back-btn"
+        type="button"
+        onclick="history.back()"
+    >
+        ← Back
+    </button>
+
+    <p class="small-title">
+        TOURNAMENT PAYMENT
+    </p>
+
+    <h1>
+        Complete Payment
+    </h1>
+
+    <p class="register-subtitle">
+        Pay the entry fee to confirm your tournament registration.
+    </p>
+
+    <div class="register-tournament-card">
+
+        <div>
+
+            <span id="paymentGame">
+                🎯 BGMI
+            </span>
+
+            <h2 id="paymentTournament">
+                Loading tournament...
+            </h2>
+
+        </div>
+
+        <strong id="paymentAmount">
+            ₹0
+        </strong>
+
+    </div>
+
+    <div
+        id="paymentMessage"
+        style="
+            display:none;
+            margin:20px 0;
+            padding:18px;
+            border-radius:12px;
+            line-height:1.5;
+            font-size:15px;
+        "
+    ></div>
+
+    <section
+        class="info-box"
+        style="margin-top:25px;"
+    >
+
+        <h2>
+            💳 Payment
+        </h2>
+
+        <div class="info-row">
+            <span>Tournament</span>
+            <strong id="summaryTournament">-</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Entry Fee</span>
+            <strong id="summaryAmount">₹0</strong>
+        </div>
+
+        <div class="info-row">
+            <span>Payment Status</span>
+            <strong
+                id="paymentStatus"
+                class="status-open"
+            >
+                Pending
+            </strong>
+        </div>
+
+    </section>
+
+    <button
+        id="payButton"
+        type="button"
+        class="continue-btn"
+        style="margin-top:25px;"
+    >
+        PAY NOW
+    </button>
+
+    <p
+        style="
+            text-align:center;
+            color:#7f899d;
+            margin-top:15px;
+            font-size:13px;
+        "
+    >
+        Secure Razorpay Test Mode payment
+    </p>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+console.log("AOCA PAYMENT PAGE STARTED");
+
+const SUPABASE_URL =
+    "https://onvcwcaimtazjlaysvvv.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+const RAZORPAY_KEY_ID =
+    "rzp_test_TTld6x2ybduAtE";
+
+const paymentTournament =
+    document.getElementById("paymentTournament");
+
+const paymentGame =
+    document.getElementById("paymentGame");
+
+const paymentAmount =
+    document.getElementById("paymentAmount");
+
+const summaryTournament =
+    document.getElementById("summaryTournament");
+
+const summaryAmount =
+    document.getElementById("summaryAmount");
+
+const paymentStatus =
+    document.getElementById("paymentStatus");
+
+const paymentMessage =
+    document.getElementById("paymentMessage");
+
+const payButton =
+    document.getElementById("payButton");
+
+const loginButton =
+    document.getElementById("loginButton");
+
+let tournamentData = null;
+let paymentBusy = false;
+
+function money(value) {
+
+    return "₹" +
+        Number(value || 0)
+        .toLocaleString("en-IN");
+
+}
+
+function showMessage(message, success = false) {
+
+    paymentMessage.textContent =
+        message;
+
+    paymentMessage.style.display =
+        "block";
+
+    if (success) {
+
+        paymentMessage.style.background =
+            "rgba(70,220,130,0.10)";
+
+        paymentMessage.style.border =
+            "1px solid rgba(70,220,130,0.30)";
+
+        paymentMessage.style.color =
+            "#70e09b";
+
+    } else {
+
+        paymentMessage.style.background =
+            "rgba(255,80,80,0.10)";
+
+        paymentMessage.style.border =
+            "1px solid rgba(255,80,80,0.30)";
+
+        paymentMessage.style.color =
+            "#ff8585";
+
+    }
+
+}
+
+function goToProfile() {
+
+    window.location.href =
+        "profile.html";
+
+}
+
+async function loadPayment() {
+
+    const tournamentId =
+        localStorage.getItem(
+            "selectedTournamentId"
+        );
+
+    const registrationId =
+        localStorage.getItem(
+            "registrationId"
+        );
+
+    if (!tournamentId) {
+
+        showMessage(
+            "Tournament information is missing."
+        );
+
+        payButton.disabled =
+            true;
+
+        return;
+
+    }
+
+    if (!registrationId) {
+
+        showMessage(
+            "Registration information is missing. Please register again."
+        );
+
+        payButton.disabled =
+            true;
+
+        return;
+
+    }
+
+    try {
+
+        const tournamentResult =
+            await supabaseClient
+                .from("tournaments")
+                .select(
+                    "id,name,game,entry_fee"
+                )
+                .eq(
+                    "id",
+                    tournamentId
+                )
+                .single();
+
+        if (tournamentResult.error) {
+
+            throw tournamentResult.error;
+
+        }
+
+        tournamentData =
+            tournamentResult.data;
+
+        const fee =
+            Number(
+                tournamentData.entry_fee || 0
+            );
+
+        if (fee <= 0) {
+
+            throw new Error(
+                "Invalid tournament entry fee."
+            );
+
+        }
+
+        paymentTournament.textContent =
+            tournamentData.name ||
+            "Tournament";
+
+        summaryTournament.textContent =
+            tournamentData.name ||
+            "Tournament";
+
+        paymentAmount.textContent =
+            money(fee);
+
+        summaryAmount.textContent =
+            money(fee);
+
+        const game =
+            String(
+                tournamentData.game || ""
+            )
+            .trim()
+            .toUpperCase();
+
+        if (game.includes("FREE")) {
+
+            paymentGame.textContent =
+                "🔥 FREE FIRE";
+
+        } else {
+
+            paymentGame.textContent =
+                "🎯 BGMI";
+
+        }
+
+        const registrationResult =
+            await supabaseClient
+                .from("registrations")
+                .select(
+                    "id,payment_status"
+                )
+                .eq(
+                    "id",
+                    registrationId
+                )
+                .single();
+
+        if (registrationResult.error) {
+
+            throw registrationResult.error;
+
+        }
+
+        const paymentState =
+            String(
+                registrationResult.data.payment_status ||
+                "pending"
+            )
+            .trim()
+            .toLowerCase();
+
+        if (paymentState === "paid") {
+
+            paymentStatus.textContent =
+                "Paid ✓";
+
+            paymentStatus.style.color =
+                "#70e09b";
+
+            payButton.textContent =
+                "PAYMENT COMPLETED ✓";
+
+            payButton.disabled =
+                true;
+
+            showMessage(
+                "Your payment has already been completed. 🏆 Redirecting...",
+                true
+            );
+
+            setTimeout(
+                goToProfile,
+                2000
+            );
+
+            return;
+
+        }
+
+        console.log(
+            "AOCA PAYMENT: READY"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "AOCA PAYMENT LOAD ERROR:",
+            error
+        );
+
+        showMessage(
+            "Unable to load payment information: " +
+            error.message
+        );
+
+    }
+
+}
+
+async function createOrder() {
+
+    const tournamentId =
+        localStorage.getItem(
+            "selectedTournamentId"
+        );
+
+    const registrationId =
+        localStorage.getItem(
+            "registrationId"
+        );
+
+    const result =
+        await supabaseClient.functions.invoke(
+            "create-payment",
+            {
+                body: {
+
+                    amount:
+                        Number(
+                            tournamentData.entry_fee
+                        ),
+
+                    receipt:
+                        "aoca_" +
+                        registrationId +
+                        "_" +
+                        Date.now(),
+
+                    notes: {
+
+                        tournament_id:
+                            tournamentId,
+
+                        registration_id:
+                            registrationId
+
+                    }
+
+                }
+
+            }
+        );
+
+    if (result.error) {
+
+        throw result.error;
+
+    }
+
+    if (
+        !result.data ||
+        !result.data.success ||
+        !result.data.order
+    ) {
+
+        throw new Error(
+            result.data?.error ||
+            "Unable to create Razorpay order."
+        );
+
+    }
+
+    return result.data;
+
+}
+
+async function verifyPayment(response) {
+
+    const registrationId =
+        localStorage.getItem(
+            "registrationId"
+        );
+
+    if (!registrationId) {
+
+        throw new Error(
+            "Registration ID is missing."
+        );
+
+    }
+
+    const result =
+        await supabaseClient.functions.invoke(
+            "verify-payment",
+            {
+                body: {
+
+                    registration_id:
+                        registrationId,
+
+                    razorpay_order_id:
+                        response.razorpay_order_id,
+
+                    razorpay_payment_id:
+                        response.razorpay_payment_id,
+
+                    razorpay_signature:
+                        response.razorpay_signature
+
+                }
+
+            }
+        );
+
+    if (result.error) {
+
+        throw result.error;
+
+    }
+
+    if (
+        !result.data ||
+        !result.data.success
+    ) {
+
+        throw new Error(
+            result.data?.error ||
+            "Payment verification failed."
+        );
+
+    }
+
+    return result.data;
+
+}
+
+async function startPayment() {
+
+    if (paymentBusy) {
+
+        return;
+
+    }
+
+    paymentBusy =
+        true;
+
+    payButton.disabled =
+        true;
+
+    payButton.textContent =
+        "CREATING PAYMENT...";
+
+    try {
+
+        const sessionResult =
+            await supabaseClient
+                .auth
+                .getSession();
+
+        if (sessionResult.error) {
+
+            throw sessionResult.error;
+
+        }
+
+        const session =
+            sessionResult.data.session;
+
+        if (!session) {
+
+            throw new Error(
+                "Please login before making a payment."
+            );
+
+        }
+
+        const orderData =
+            await createOrder();
+
+        const options = {
+
+            key:
+                RAZORPAY_KEY_ID,
+
+            amount:
+                orderData.order.amount,
+
+            currency:
+                "INR",
+
+            name:
+                "AOCA Tournament",
+
+            description:
+                tournamentData.name,
+
+            order_id:
+                orderData.order.id,
+
+            prefill: {
+
+                name:
+                    session.user.user_metadata?.full_name ||
+                    "",
+
+                email:
+                    session.user.email ||
+                    "",
+
+                contact:
+                    localStorage.getItem(
+                        "registrationPhone"
+                    ) ||
+                    ""
+
+            },
+
+            theme: {
+
+                color:
+                    "#7c83ff"
+
+            },
+
+            handler:
+                async function(response) {
+
+                    paymentStatus.textContent =
+                        "Verifying...";
+
+                    paymentStatus.style.color =
+                        "#f5c76b";
+
+                    payButton.textContent =
+                        "VERIFYING PAYMENT...";
+
+                    showMessage(
+                        "Payment received. Verifying securely...",
+                        true
+                    );
+
+                    try {
+
+                        await verifyPayment(
+                            response
+                        );
+
+                        paymentStatus.textContent =
+                            "Paid ✓";
+
+                        paymentStatus.style.color =
+                            "#70e09b";
+
+                        payButton.textContent =
+                            "PAYMENT COMPLETED ✓";
+
+                        payButton.disabled =
+                            true;
+
+                        paymentBusy =
+                            false;
+
+                        localStorage.setItem(
+                            "paymentVerified",
+                            "true"
+                        );
+
+                        showMessage(
+                            "Payment verified successfully! Your tournament registration is confirmed. 🏆 Redirecting...",
+                            true
+                        );
+
+                        setTimeout(
+                            goToProfile,
+                            2000
+                        );
+
+                    } catch (error) {
+
+                        console.error(
+                            "AOCA VERIFICATION ERROR:",
+                            error
+                        );
+
+                        paymentStatus.textContent =
+                            "Verification Failed";
+
+                        paymentStatus.style.color =
+                            "#ff8585";
+
+                        payButton.disabled =
+                            false;
+
+                        payButton.textContent =
+                            "TRY AGAIN";
+
+                        paymentBusy =
+                            false;
+
+                        showMessage(
+                            "Payment was received, but verification failed: " +
+                            error.message
+                        );
+
+                    }
+
+                }
+
+        };
+
+        options.modal = {
+
+            confirm_close:
+                true,
+
+            escape:
+                true,
+
+            backdropclose:
+                false,
+
+            animation:
+                true,
+
+            ondismiss:
+                function() {
+
+                    paymentBusy =
+                        false;
+
+                    payButton.disabled =
+                        false;
+
+                    payButton.textContent =
+                        "PAY NOW";
+
+                    showMessage(
+                        "Payment window closed. No payment was confirmed."
+                    );
+
+                }
+
+        };
+
+        const razorpay =
+            new Razorpay(
+                options
+            );
+
+        razorpay.on(
+            "payment.failed",
+            function(response) {
+
+                console.error(
+                    "RAZORPAY PAYMENT FAILED:",
+                    response
+                );
+
+                paymentBusy =
+                    false;
+
+                payButton.disabled =
+                    false;
+
+                payButton.textContent =
+                    "PAY NOW";
+
+                paymentStatus.textContent =
+                    "Payment Failed";
+
+                paymentStatus.style.color =
+                    "#ff8585";
+
+                showMessage(
+                    response.error?.description ||
+                    "Payment failed. Please try again."
+                );
+
+            }
+        );
+
+        payButton.textContent =
+            "OPENING CHECKOUT...";
+
+        razorpay.open();
+
+    } catch (error) {
+
+        console.error(
+            "AOCA PAYMENT ERROR:",
+            error
+        );
+
+        paymentBusy =
+            false;
+
+        payButton.disabled =
+            false;
+
+        payButton.textContent =
+            "PAY NOW";
+
+        showMessage(
+            "Unable to start payment: " +
+            error.message
+        );
+
+    }
+
+}
+
+payButton.addEventListener(
+    "click",
+    startPayment
+);
+
+loginButton.addEventListener(
+    "click",
+    async function() {
+
+        try {
+
+            const result =
+                await supabaseClient
+                    .auth
+                    .getSession();
+
+            if (
+                result.data &&
+                result.data.session
+            ) {
+
+                window.location.href =
+                    "profile.html";
+
+            } else {
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        } catch (error) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+    }
+);
+
+loadPayment();
+
+console.log(
+    "AOCA PAYMENT PAGE READY"
+);
+
+</script>
+
+</body>
+
+</html>

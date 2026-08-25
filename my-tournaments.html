@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Tournaments | AOCA</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+/* =========================================================
+   AOCA MY TOURNAMENTS
+   All classes are uniquely prefixed with aoca-my-
+   so style.css cannot interfere.
+========================================================= */
+
+.aoca-my-page {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 30px 18px 100px;
+    box-sizing: border-box;
+}
+
+.aoca-my-back {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: #9aa4b8;
+    font-size: 15px;
+    padding: 0;
+    margin: 0 0 32px;
+    cursor: pointer;
+}
+
+.aoca-my-title {
+    color: #ffffff;
+    font-size: 36px;
+    line-height: 1.15;
+    margin: 0 0 10px;
+    font-weight: 900;
+}
+
+.aoca-my-subtitle {
+    color: #7f899d;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 30px;
+}
+
+
+/* Message */
+
+.aoca-my-message {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.aoca-my-message.aoca-my-error {
+    display: block;
+    background: rgba(255, 80, 80, 0.10);
+    border: 1px solid rgba(255, 80, 80, 0.30);
+    color: #ff8585;
+}
+
+
+/* Loading */
+
+.aoca-my-loading {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 40px 10px;
+    text-align: center;
+    color: #8d97ab;
+}
+
+
+/* =========================================================
+   TOURNAMENT CARD
+========================================================= */
+
+.aoca-my-card {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: #111722;
+
+    border: 1px solid #252d3d;
+    border-radius: 18px;
+
+    padding: 20px;
+
+    margin: 0 0 20px;
+
+    overflow: hidden;
+}
+
+
+/* Card heading */
+
+.aoca-my-card-head {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 15px;
+}
+
+
+.aoca-my-card-left {
+    min-width: 0;
+    flex: 1;
+}
+
+
+.aoca-my-game {
+    color: #9aa7ff;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+
+.aoca-my-name {
+    color: #ffffff;
+
+    font-size: 22px;
+    line-height: 1.25;
+
+    font-weight: 900;
+
+    margin: 0;
+
+    overflow-wrap: anywhere;
+}
+
+
+.aoca-my-fee {
+    flex: 0 0 auto;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 900;
+
+    white-space: nowrap;
+}
+
+
+/* Divider */
+
+.aoca-my-divider {
+    width: 100%;
+    height: 1px;
+
+    background: #252d3d;
+
+    margin: 20px 0;
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.aoca-my-details {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.aoca-my-detail {
+    width: 100%;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #202837;
+}
+
+
+.aoca-my-detail:last-child {
+    border-bottom: none;
+}
+
+
+.aoca-my-label {
+    flex: 0 0 42%;
+
+    color: #7f899d;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+.aoca-my-value {
+    flex: 1;
+
+    min-width: 0;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    line-height: 1.4;
+
+    text-align: right;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* Status */
+
+.aoca-my-paid {
+    color: #70e09b !important;
+}
+
+
+.aoca-my-confirmed {
+    color: #70e09b !important;
+}
+
+
+.aoca-my-pending {
+    color: #f5c76b !important;
+}
+
+
+/* Verified banner */
+
+.aoca-my-verified {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-top: 18px;
+
+    padding: 14px;
+
+    border-radius: 11px;
+
+    text-align: center;
+
+    background: rgba(70, 220, 130, 0.10);
+
+    border: 1px solid rgba(70, 220, 130, 0.28);
+
+    color: #70e09b;
+
+    font-size: 13px;
+
+    font-weight: 900;
+}
+
+
+/* Empty state */
+
+.aoca-my-empty {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: #111722;
+
+    border: 1px solid #252d3d;
+
+    border-radius: 16px;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #8d97ab;
+}
+
+
+.aoca-my-empty-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+
+.aoca-my-empty-title {
+    color: #ffffff;
+
+    font-size: 19px;
+
+    font-weight: 900;
+
+    margin-bottom: 8px;
+}
+
+
+.aoca-my-browse {
+    width: 100%;
+
+    height: 48px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #7c8cff;
+
+    color: #080b12;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .aoca-my-page {
+        padding: 26px 16px 80px;
+    }
+
+    .aoca-my-title {
+        font-size: 32px;
+    }
+
+    .aoca-my-card {
+        padding: 18px;
+    }
+
+    .aoca-my-card-head {
+        gap: 10px;
+    }
+
+    .aoca-my-name {
+        font-size: 20px;
+    }
+
+    .aoca-my-fee {
+        font-size: 22px;
+    }
+
+    .aoca-my-detail {
+        gap: 15px;
+    }
+
+    .aoca-my-label {
+        flex: 0 0 40%;
+    }
+
+}
+
+
+/* Very small phones */
+
+@media (max-width: 350px) {
+
+    .aoca-my-card-head {
+        display: block;
+    }
+
+    .aoca-my-fee {
+        margin-top: 10px;
+    }
+
+    .aoca-my-detail {
+        display: block;
+    }
+
+    .aoca-my-label {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .aoca-my-value {
+        display: block;
+        width: 100%;
+        text-align: left;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+    <div class="logo">
+        AOCA
+        <span>TOURNAMENT</span>
+    </div>
+
+</header>
+
+
+<main class="aoca-my-page">
+
+
+<button
+    type="button"
+    class="aoca-my-back"
+    id="aocaMyBack"
+>
+    ← Back to Profile
+</button>
+
+
+<h1 class="aoca-my-title">
+    My Tournaments
+</h1>
+
+
+<p class="aoca-my-subtitle">
+    View your tournament registrations and payment status.
+</p>
+
+
+<div
+    id="aocaMyMessage"
+    class="aoca-my-message"
+></div>
+
+
+<div
+    id="aocaMyLoading"
+    class="aoca-my-loading"
+>
+    Loading your tournaments...
+</div>
+
+
+<div
+    id="aocaMyList"
+></div>
+
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+console.log("AOCA: MY TOURNAMENTS STARTED");
+
+
+const AOCA_SUPABASE_URL =
+    "https://onvcwcaimtazjlaysvvv.supabase.co";
+
+
+const AOCA_SUPABASE_KEY =
+    "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+
+const aocaSupabase =
+    window.supabase.createClient(
+        AOCA_SUPABASE_URL,
+        AOCA_SUPABASE_KEY
+    );
+
+
+const aocaMyLoading =
+    document.getElementById(
+        "aocaMyLoading"
+    );
+
+
+const aocaMyList =
+    document.getElementById(
+        "aocaMyList"
+    );
+
+
+const aocaMyMessage =
+    document.getElementById(
+        "aocaMyMessage"
+    );
+
+
+const aocaMyBack =
+    document.getElementById(
+        "aocaMyBack"
+    );
+
+
+function aocaMyShowError(text) {
+
+    aocaMyMessage.textContent =
+        text;
+
+    aocaMyMessage.className =
+        "aoca-my-message aoca-my-error";
+
+}
+
+
+function aocaMyMoney(value) {
+
+    return "₹" +
+        Number(value || 0)
+            .toLocaleString("en-IN");
+
+}
+
+
+function aocaMyDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+        return "—";
+    }
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+
+}
+
+
+function aocaMyEscape(value) {
+
+    return String(value || "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+async function aocaMyLoad() {
+
+    try {
+
+        console.log(
+            "AOCA: Loading user..."
+        );
+
+
+        const sessionResult =
+            await aocaSupabase
+                .auth
+                .getSession();
+
+
+        if (sessionResult.error) {
+
+            throw sessionResult.error;
+
+        }
+
+
+        const session =
+            sessionResult
+                .data
+                .session;
+
+
+        if (!session) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        const user =
+            session.user;
+
+
+        console.log(
+            "AOCA USER:",
+            user.id
+        );
+
+
+        const registrationResult =
+            await aocaSupabase
+                .from("registrations")
+                .select(
+                    "id,tournament_id,user_id,team_id,game_uid,in_game_name,participation_type,payment_status,registration_status,registered_at,razorpay_order_id,razorpay_payment_id,razorpay_signature,paid_at"
+                )
+                .eq(
+                    "user_id",
+                    user.id
+                )
+                .order(
+                    "registered_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        console.log(
+            "AOCA REGISTRATIONS:",
+            registrationResult
+        );
+
+
+        if (registrationResult.error) {
+
+            throw registrationResult.error;
+
+        }
+
+
+        const registrations =
+            registrationResult.data || [];
+
+
+        if (
+            registrations.length === 0
+        ) {
+
+            aocaMyLoading.style.display =
+                "none";
+
+
+            aocaMyList.innerHTML = `
+                <div class="aoca-my-empty">
+
+                    <div class="aoca-my-empty-icon">
+                        🏆
+                    </div>
+
+                    <div class="aoca-my-empty-title">
+                        No tournaments yet
+                    </div>
+
+                    <div>
+                        You haven't registered
+                        for any tournaments yet.
+                    </div>
+
+                    <button
+                        type="button"
+                        class="aoca-my-browse"
+                        id="aocaMyBrowse"
+                    >
+                        Browse Tournaments
+                    </button>
+
+                </div>
+            `;
+
+
+            document
+                .getElementById(
+                    "aocaMyBrowse"
+                )
+                .addEventListener(
+                    "click",
+                    function() {
+
+                        window.location.href =
+                            "tournaments.html";
+
+                    }
+                );
+
+
+            return;
+
+        }
+
+
+        const tournamentIds =
+            registrations
+                .map(
+                    function(item) {
+                        return item.tournament_id;
+                    }
+                )
+                .filter(
+                    function(id) {
+                        return Boolean(id);
+                    }
+                );
+
+
+        const tournamentResult =
+            await aocaSupabase
+                .from("tournaments")
+                .select(
+                    "id,name,entry_fee,start_time,game,tournament_date"
+                )
+                .in(
+                    "id",
+                    tournamentIds
+                );
+
+
+        console.log(
+            "AOCA TOURNAMENTS:",
+            tournamentResult
+        );
+
+
+        if (tournamentResult.error) {
+
+            throw tournamentResult.error;
+
+        }
+
+
+        const tournaments =
+            tournamentResult.data || [];
+
+
+        const tournamentMap =
+            new Map();
+
+
+        tournaments.forEach(
+            function(item) {
+
+                tournamentMap.set(
+                    item.id,
+                    item
+                );
+
+            }
+        );
+
+
+        aocaMyLoading.style.display =
+            "none";
+
+
+        registrations.forEach(
+            function(registration) {
+
+                const tournament =
+                    tournamentMap.get(
+                        registration.tournament_id
+                    );
+
+
+                aocaMyRender(
+                    registration,
+                    tournament
+                );
+
+            }
+        );
+
+
+        console.log(
+            "AOCA: My tournaments loaded!"
+        );
+
+    }
+    catch (error) {
+
+        aocaMyLoading.style.display =
+            "none";
+
+        console.error(
+            "AOCA MY TOURNAMENTS ERROR:",
+            error
+        );
+
+        aocaMyShowError(
+            "Unable to load your tournaments: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+function aocaMyRender(
+    registration,
+    tournament
+) {
+
+    const tournamentName =
+        tournament &&
+        tournament.name
+            ? tournament.name
+            : "Tournament";
+
+
+    const game =
+        tournament &&
+        tournament.game
+            ? tournament.game
+            : "BGMI";
+
+
+    const fee =
+        tournament &&
+        tournament.entry_fee
+            ? tournament.entry_fee
+            : 0;
+
+
+    const paymentStatus =
+        String(
+            registration.payment_status ||
+            "pending"
+        ).toLowerCase();
+
+
+    const registrationStatus =
+        String(
+            registration.registration_status ||
+            "pending"
+        ).toLowerCase();
+
+
+    const paid =
+        paymentStatus === "paid";
+
+
+    const confirmed =
+        registrationStatus === "registered" ||
+        registrationStatus === "confirmed";
+
+
+    const card =
+        document.createElement(
+            "section"
+        );
+
+
+    card.className =
+        "aoca-my-card";
+
+
+    const paymentClass =
+        paid
+            ? "aoca-my-paid"
+            : "aoca-my-pending";
+
+
+    const registrationClass =
+        confirmed
+            ? "aoca-my-confirmed"
+            : "aoca-my-pending";
+
+
+    const paymentText =
+        paid
+            ? "Paid ✓"
+            : "Pending";
+
+
+    const registrationText =
+        confirmed
+            ? "Confirmed ✓"
+            : (
+                registration.registration_status ||
+                "Pending"
+            );
+
+
+    const tournamentDate =
+        tournament
+            ? (
+                tournament.tournament_date ||
+                tournament.start_time
+            )
+            : null;
+
+
+    card.innerHTML = `
+
+        <div class="aoca-my-card-head">
+
+            <div class="aoca-my-card-left">
+
+                <div class="aoca-my-game">
+                    🎯 ${aocaMyEscape(game)}
+                </div>
+
+                <h2 class="aoca-my-name">
+                    ${aocaMyEscape(tournamentName)}
+                </h2>
+
+            </div>
+
+            <div class="aoca-my-fee">
+                ${aocaMyMoney(fee)}
+            </div>
+
+        </div>
+
+
+        <div class="aoca-my-divider"></div>
+
+
+        <div class="aoca-my-details">
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Payment
+                </span>
+
+                <strong
+                    class="aoca-my-value ${paymentClass}"
+                >
+                    ${aocaMyEscape(paymentText)}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Registration
+                </span>
+
+                <strong
+                    class="aoca-my-value ${registrationClass}"
+                >
+                    ${aocaMyEscape(registrationText)}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    In-Game Name
+                </span>
+
+                <strong class="aoca-my-value">
+                    ${aocaMyEscape(
+                        registration.in_game_name ||
+                        "—"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Game UID
+                </span>
+
+                <strong class="aoca-my-value">
+                    ${aocaMyEscape(
+                        registration.game_uid ||
+                        "—"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Participation
+                </span>
+
+                <strong class="aoca-my-value">
+                    ${aocaMyEscape(
+                        registration.participation_type ||
+                        "—"
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Tournament Date
+                </span>
+
+                <strong class="aoca-my-value">
+                    ${aocaMyDate(
+                        tournamentDate
+                    )}
+                </strong>
+
+            </div>
+
+
+            <div class="aoca-my-detail">
+
+                <span class="aoca-my-label">
+                    Registered
+                </span>
+
+                <strong class="aoca-my-value">
+                    ${aocaMyDate(
+                        registration.registered_at
+                    )}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        ${
+            paid
+                ? `
+                    <div class="aoca-my-verified">
+                        🏆 PAYMENT VERIFIED
+                    </div>
+                  `
+                : ""
+        }
+
+    `;
+
+
+    aocaMyList.appendChild(
+        card
+    );
+
+}
+
+
+aocaMyBack.addEventListener(
+    "click",
+    function() {
+
+        window.location.href =
+            "profile.html";
+
+    }
+);
+
+
+aocaMyLoad();
+
+
+console.log(
+    "AOCA: MY TOURNAMENTS READY"
+);
+
+</script>
+
+
+</body>
+
+</html>

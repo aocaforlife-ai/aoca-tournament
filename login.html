@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login | AOCA Tournament</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* =========================================
+           LOGIN PAGE
+        ========================================= */
+
+        .auth-page {
+            min-height: calc(100vh - 80px);
+            padding: 30px 24px 50px;
+        }
+
+        .auth-container {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .auth-back {
+            background: transparent;
+            border: none;
+            color: #9aa4b8;
+            font-size: 14px;
+            padding: 0;
+            margin-bottom: 35px;
+            cursor: pointer;
+        }
+
+        .auth-label {
+            color: #8994aa;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .auth-title {
+            font-size: 34px;
+            margin: 0 0 10px;
+            color: #ffffff;
+        }
+
+        .auth-subtitle {
+            color: #7f899d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .auth-card {
+            background: #111722;
+            border: 1px solid #252d3d;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .auth-form-group {
+            margin-bottom: 18px;
+        }
+
+        .auth-form-group label {
+            display: block;
+            color: #b7bfce;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .auth-form-group input {
+            width: 100%;
+            height: 50px;
+            box-sizing: border-box;
+
+            padding: 0 14px;
+
+            background: #0b0f17;
+            border: 1px solid #293246;
+            border-radius: 10px;
+
+            color: #ffffff;
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .auth-form-group input:focus {
+            border-color: #7c8cff;
+        }
+
+        .auth-form-group input::placeholder {
+            color: #596477;
+        }
+
+        .forgot-row {
+            text-align: right;
+            margin-top: -7px;
+            margin-bottom: 18px;
+        }
+
+        .forgot-button {
+            background: none;
+            border: none;
+            padding: 0;
+
+            color: #8d9aff;
+            font-size: 11px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .auth-button {
+            width: 100%;
+            height: 52px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #7c8cff;
+            color: #080b12;
+
+            font-size: 14px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-message {
+            display: none;
+
+            margin-top: 18px;
+            padding: 13px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .auth-message.success {
+            display: block;
+
+            background: rgba(64, 200, 130, 0.10);
+            border: 1px solid rgba(64, 200, 130, 0.30);
+
+            color: #62d89a;
+        }
+
+        .auth-message.error {
+            display: block;
+
+            background: rgba(255, 80, 80, 0.10);
+            border: 1px solid rgba(255, 80, 80, 0.30);
+
+            color: #ff8585;
+        }
+
+        .auth-register {
+            text-align: center;
+
+            color: #737e92;
+            font-size: 12px;
+
+            margin-top: 22px;
+        }
+
+        .auth-register button {
+            background: none;
+            border: none;
+
+            color: #8d9aff;
+            font-weight: 800;
+            font-size: 12px;
+
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="topbar">
+
+        <div class="logo">
+
+            AOCA
+
+            <span>
+                TOURNAMENT
+            </span>
+
+        </div>
+
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='register.html'"
+        >
+            Create Account
+        </button>
+
+    </header>
+
+
+    <!-- =========================================
+         LOGIN PAGE
+    ========================================== -->
+
+    <main class="auth-page">
+
+        <div class="auth-container">
+
+
+            <button
+                class="auth-back"
+                onclick="history.back()"
+            >
+                ← Back
+            </button>
+
+
+            <div class="auth-label">
+                AOCA TOURNAMENT
+            </div>
+
+
+            <h1 class="auth-title">
+                Welcome Back
+            </h1>
+
+
+            <p class="auth-subtitle">
+                Login to your AOCA Tournament account
+                and continue competing.
+            </p>
+
+
+            <div class="auth-card">
+
+
+                <form id="loginForm">
+
+
+                    <!-- EMAIL -->
+
+                    <div class="auth-form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="auth-form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- FORGOT PASSWORD -->
+
+                    <div class="forgot-row">
+
+                        <button
+                            type="button"
+                            class="forgot-button"
+                            id="forgotPasswordButton"
+                        >
+                            Forgot password?
+                        </button>
+
+                    </div>
+
+
+                    <!-- LOGIN -->
+
+                    <button
+                        type="submit"
+                        class="auth-button"
+                        id="loginButton"
+                    >
+                        LOGIN →
+                    </button>
+
+
+                </form>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="authMessage"
+                    class="auth-message"
+                ></div>
+
+
+            </div>
+
+
+            <div class="auth-register">
+
+                Don't have an account?
+
+                <button
+                    type="button"
+                    onclick="window.location.href='register.html'"
+                >
+                    Create Account
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         SUPABASE
+    ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        /* =========================================
+           SUPABASE CONNECTION
+        ========================================== */
+
+        const SUPABASE_URL =
+            "https://onvcwcaimtazjlaysvvv.supabase.co";
+
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        /* =========================================
+           ELEMENTS
+        ========================================== */
+
+        const loginForm =
+            document.querySelector("#loginForm");
+
+
+        const loginButton =
+            document.querySelector("#loginButton");
+
+
+        const forgotPasswordButton =
+            document.querySelector(
+                "#forgotPasswordButton"
+            );
+
+
+        const authMessage =
+            document.querySelector("#authMessage");
+
+
+        /* =========================================
+           SHOW MESSAGE
+        ========================================== */
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            authMessage.textContent =
+                message;
+
+            authMessage.className =
+                "auth-message " + type;
+
+        }
+
+
+        /* =========================================
+           LOGIN
+        ========================================== */
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const email =
+                    document
+                        .querySelector("#email")
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .querySelector("#password")
+                        .value;
+
+
+                loginButton.disabled =
+                    true;
+
+                loginButton.textContent =
+                    "LOGGING IN...";
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.signInWithPassword({
+
+                            email:
+                                email,
+
+                            password:
+                                password
+
+                        });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    if (!data.session) {
+
+                        throw new Error(
+                            "Login failed. Please try again."
+                        );
+
+                    }
+
+
+                    showMessage(
+                        "Login successful! 🏆",
+                        "success"
+                    );
+
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "profile.html";
+
+                        },
+                        800
+                    );
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AOCA Login Error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        error.message ||
+                        "Invalid email or password.",
+                        "error"
+                    );
+
+                }
+
+
+                finally {
+
+                    loginButton.disabled =
+                        false;
+
+                    loginButton.textContent =
+                        "LOGIN →";
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           FORGOT PASSWORD
+        ========================================== */
+
+        forgotPasswordButton.addEventListener(
+            "click",
+            async function () {
+
+                const email =
+                    document
+                        .querySelector("#email")
+                        .value
+                        .trim();
+
+
+                if (!email) {
+
+                    showMessage(
+                        "Enter your email address first.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                forgotPasswordButton.disabled =
+                    true;
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient.auth
+                            .resetPasswordForEmail(
+                                email,
+                                {
+                                    redirectTo:
+                                        window.location.origin +
+                                        "/reset-password.html"
+                                }
+                            );
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    showMessage(
+                        "Password reset email sent. Check your inbox. 📧",
+                        "success"
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AOCA Password Reset Error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        error.message ||
+                        "Unable to send password reset email.",
+                        "error"
+                    );
+
+                }
+
+
+                finally {
+
+                    forgotPasswordButton.disabled =
+                        false;
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           CHECK EXISTING SESSION
+        ========================================== */
+
+        async function checkExistingSession() {
+
+            const {
+                data
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (data.session) {
+
+                window.location.href =
+                    "profile.html";
+
+            }
+
+        }
+
+
+        checkExistingSession();
+
+
+    </script>
+
+
+</body>
+
+</html>

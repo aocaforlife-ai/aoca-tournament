@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AOCA Admin</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.aoca-admin{
+    max-width:1000px;
+    margin:auto;
+    padding:30px 18px 100px;
+}
+
+.aoca-admin h1{
+    color:#fff;
+    font-size:32px;
+    margin:0 0 8px;
+}
+
+.aoca-admin-sub{
+    color:#7f899d;
+    margin-bottom:25px;
+}
+
+.aoca-admin-message{
+    display:none;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+.aoca-admin-error{
+    display:block;
+    background:rgba(255,80,80,.1);
+    border:1px solid rgba(255,80,80,.3);
+    color:#ff8585;
+}
+
+.aoca-admin-success{
+    display:block;
+    background:rgba(70,220,130,.1);
+    border:1px solid rgba(70,220,130,.3);
+    color:#70e09b;
+}
+
+.aoca-admin-stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:30px;
+}
+
+.aoca-admin-stat{
+    background:#111722;
+    border:1px solid #252d3d;
+    border-radius:16px;
+    padding:20px;
+}
+
+.aoca-admin-stat-label{
+    color:#7f899d;
+    font-size:12px;
+    margin-bottom:10px;
+}
+
+.aoca-admin-stat-value{
+    color:#fff;
+    font-size:28px;
+    font-weight:900;
+}
+
+.aoca-admin-section{
+    background:#111722;
+    border:1px solid #252d3d;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.aoca-admin-section h2{
+    color:#fff;
+    margin:0 0 18px;
+    font-size:20px;
+}
+
+.aoca-admin-actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.aoca-admin-btn{
+    border:0;
+    border-radius:12px;
+    padding:15px;
+    font-weight:900;
+    cursor:pointer;
+    background:#7c8cff;
+    color:#080b12;
+}
+
+.aoca-admin-btn.secondary{
+    background:#252d3d;
+    color:#fff;
+}
+
+.aoca-admin-btn.danger{
+    background:#ff6b6b;
+    color:#170707;
+}
+
+.aoca-admin-table-wrap{
+    overflow-x:auto;
+}
+
+.aoca-admin-table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:650px;
+}
+
+.aoca-admin-table th{
+    color:#7f899d;
+    font-size:11px;
+    text-align:left;
+    padding:12px 8px;
+    border-bottom:1px solid #252d3d;
+}
+
+.aoca-admin-table td{
+    color:#fff;
+    font-size:13px;
+    padding:14px 8px;
+    border-bottom:1px solid #202837;
+}
+
+.aoca-admin-paid{
+    color:#70e09b!important;
+    font-weight:900;
+}
+
+.aoca-admin-pending{
+    color:#f5c76b!important;
+    font-weight:900;
+}
+
+.aoca-admin-logout{
+    margin-top:10px;
+}
+
+.aoca-admin-empty{
+    color:#7f899d;
+    text-align:center;
+    padding:30px;
+}
+
+@media(max-width:700px){
+    .aoca-admin-stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .aoca-admin-actions{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:400px){
+    .aoca-admin-stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="logo">
+        AOCA
+        <span>TOURNAMENT</span>
+    </div>
+
+    <button
+        class="login-btn"
+        id="logoutButton"
+        type="button"
+    >
+        Logout
+    </button>
+</header>
+
+<main class="aoca-admin">
+
+    <h1>Admin Dashboard</h1>
+
+    <p class="aoca-admin-sub">
+        AOCA Tournament Management
+    </p>
+
+    <div
+        id="adminMessage"
+        class="aoca-admin-message"
+    ></div>
+
+    <div
+        id="loading"
+        style="color:#7f899d;margin-bottom:20px;"
+    >
+        Checking admin access...
+    </div>
+
+    <section
+        id="dashboard"
+        style="display:none;"
+    >
+
+        <div class="aoca-admin-stats">
+
+            <div class="aoca-admin-stat">
+                <div class="aoca-admin-stat-label">
+                    TOURNAMENTS
+                </div>
+                <div
+                    class="aoca-admin-stat-value"
+                    id="totalTournaments"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="aoca-admin-stat">
+                <div class="aoca-admin-stat-label">
+                    REGISTRATIONS
+                </div>
+                <div
+                    class="aoca-admin-stat-value"
+                    id="totalRegistrations"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="aoca-admin-stat">
+                <div class="aoca-admin-stat-label">
+                    PAID
+                </div>
+                <div
+                    class="aoca-admin-stat-value"
+                    id="paidRegistrations"
+                >
+                    0
+                </div>
+            </div>
+
+            <div class="aoca-admin-stat">
+                <div class="aoca-admin-stat-label">
+                    PENDING
+                </div>
+                <div
+                    class="aoca-admin-stat-value"
+                    id="pendingRegistrations"
+                >
+                    0
+                </div>
+            </div>
+
+        </div>
+
+        <section class="aoca-admin-section">
+
+            <h2>Quick Actions</h2>
+
+            <div class="aoca-admin-actions">
+
+                <button
+                    class="aoca-admin-btn"
+                    id="createTournamentButton"
+                    type="button"
+                >
+                    ➕ Create Tournament
+                </button>
+
+                <button
+                    class="aoca-admin-btn secondary"
+                    id="managePlayersButton"
+                    type="button"
+                >
+                    👥 Manage Players
+                </button>
+
+                <button
+                    class="aoca-admin-btn secondary"
+                    id="resultsButton"
+                    type="button"
+                >
+                    📝 Manage Results
+                </button>
+
+                <button
+                    class="aoca-admin-btn secondary"
+                    id="refreshButton"
+                    type="button"
+                >
+                    🔄 Refresh Dashboard
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="aoca-admin-section">
+
+            <h2>Recent Tournaments</h2>
+
+            <div class="aoca-admin-table-wrap">
+
+                <table class="aoca-admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Game</th>
+                            <th>Entry</th>
+                            <th>Players</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tournamentTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section class="aoca-admin-section">
+
+            <h2>Recent Registrations</h2>
+
+            <div class="aoca-admin-table-wrap">
+
+                <table class="aoca-admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Game UID</th>
+                            <th>Tournament</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="registrationTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <button
+            class="aoca-admin-btn danger aoca-admin-logout"
+            id="logoutButton2"
+            type="button"
+        >
+            Logout Admin
+        </button>
+
+    </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+"use strict";
+
+const SUPABASE_URL =
+"https://onvcwcaimtazjlaysvvv.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+const ADMIN_EMAIL =
+"aocaforlife@gmail.com";
+
+const loading =
+document.getElementById(
+    "loading"
+);
+
+const dashboard =
+document.getElementById(
+    "dashboard"
+);
+
+const message =
+document.getElementById(
+    "adminMessage"
+);
+
+const totalTournaments =
+document.getElementById(
+    "totalTournaments"
+);
+
+const totalRegistrations =
+document.getElementById(
+    "totalRegistrations"
+);
+
+const paidRegistrations =
+document.getElementById(
+    "paidRegistrations"
+);
+
+const pendingRegistrations =
+document.getElementById(
+    "pendingRegistrations"
+);
+
+const tournamentTable =
+document.getElementById(
+    "tournamentTable"
+);
+
+const registrationTable =
+document.getElementById(
+    "registrationTable"
+);
+
+function escapeHtml(value){
+
+return String(value || "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+function money(value){
+
+return "₹" +
+Number(value || 0)
+.toLocaleString("en-IN");
+
+}
+
+function showError(text){
+
+message.textContent =
+text;
+
+message.className =
+"aoca-admin-message aoca-admin-error";
+
+}
+
+function showSuccess(text){
+
+message.textContent =
+text;
+
+message.className =
+"aoca-admin-message aoca-admin-success";
+
+}
+
+async function logout(){
+
+await supabaseClient
+.auth
+.signOut();
+
+window.location.href =
+"login.html";
+
+}
+
+async function checkAdmin(){
+
+try{
+
+const sessionResult =
+await supabaseClient
+.auth
+.getSession();
+
+if(sessionResult.error){
+
+throw sessionResult.error;
+
+}
+
+const session =
+sessionResult.data.session;
+
+if(!session){
+
+window.location.href =
+"login.html";
+
+return false;
+
+}
+
+const user =
+session.user;
+
+if(
+String(user.email || "")
+.toLowerCase() !==
+ADMIN_EMAIL.toLowerCase()
+){
+
+showError(
+"Access denied. This account is not an AOCA admin."
+);
+
+loading.style.display =
+"none";
+
+return false;
+
+}
+
+const adminResult =
+await supabaseClient
+.from("admin_users")
+.select("user_id,email")
+.eq("user_id",user.id)
+.maybeSingle();
+
+if(adminResult.error){
+
+throw adminResult.error;
+
+}
+
+if(!adminResult.data){
+
+showError(
+"Admin account is not registered."
+);
+
+loading.style.display =
+"none";
+
+return false;
+
+}
+
+loading.style.display =
+"none";
+
+dashboard.style.display =
+"block";
+
+return true;
+
+}
+catch(error){
+
+console.error(
+"ADMIN AUTH ERROR:",
+error
+);
+
+loading.style.display =
+"none";
+
+showError(
+"Could not verify admin access: " +
+(error.message || "Unknown error")
+);
+
+return false;
+
+}
+
+}
+
+async function loadDashboard(){
+
+try{
+
+const tournamentsResult =
+await supabaseClient
+.from("tournaments")
+.select(
+"id,name,game,entry_fee,current_players,status"
+);
+
+if(tournamentsResult.error){
+
+throw tournamentsResult.error;
+
+}
+
+const tournaments =
+tournamentsResult.data || [];
+
+totalTournaments.textContent =
+tournaments.length;
+
+tournamentTable.innerHTML = "";
+
+if(!tournaments.length){
+
+tournamentTable.innerHTML =
+'<tr><td colspan="5" class="aoca-admin-empty">No tournaments found.</td></tr>';
+
+}
+else{
+
+tournaments
+.slice(0,10)
+.forEach(
+function(tournament){
+
+const row =
+document.createElement("tr");
+
+row.innerHTML =
+
+"<td>" +
+escapeHtml(
+tournament.name
+) +
+"</td>" +
+
+"<td>" +
+escapeHtml(
+tournament.game || "BGMI"
+) +
+"</td>" +
+
+"<td>" +
+money(
+tournament.entry_fee
+) +
+"</td>" +
+
+"<td>" +
+Number(
+tournament.current_players || 0
+) +
+"</td>" +
+
+"<td>" +
+escapeHtml(
+tournament.status || "—"
+) +
+"</td>";
+
+tournamentTable
+.appendChild(row);
+
+}
+);
+
+}
+
+
+const registrationsResult =
+await supabaseClient
+.from("registrations")
+.select(
+"id,tournament_id,in_game_name,game_uid,payment_status,registration_status"
+);
+
+if(registrationsResult.error){
+
+throw registrationsResult.error;
+
+}
+
+const registrations =
+registrationsResult.data || [];
+
+totalRegistrations.textContent =
+registrations.length;
+
+let paid = 0;
+
+registrations.forEach(
+function(item){
+
+if(
+String(
+item.payment_status || ""
+).toLowerCase() === "paid"
+){
+
+paid++;
+
+}
+
+}
+);
+
+paidRegistrations.textContent =
+paid;
+
+pendingRegistrations.textContent =
+registrations.length - paid;
+
+
+const tournamentMap =
+new Map();
+
+tournaments.forEach(
+function(item){
+
+tournamentMap.set(
+item.id,
+item.name
+);
+
+}
+);
+
+registrationTable.innerHTML = "";
+
+if(!registrations.length){
+
+registrationTable.innerHTML =
+'<tr><td colspan="5" class="aoca-admin-empty">No registrations found.</td></tr>';
+
+}
+else{
+
+registrations
+.slice(-10)
+.reverse()
+.forEach(
+function(item){
+
+const paidStatus =
+String(
+item.payment_status || ""
+).toLowerCase() === "paid";
+
+const row =
+document.createElement("tr");
+
+row.innerHTML =
+
+"<td>" +
+escapeHtml(
+item.in_game_name ||
+"Player"
+) +
+"</td>" +
+
+"<td>" +
+escapeHtml(
+item.game_uid ||
+"—"
+) +
+"</td>" +
+
+"<td>" +
+escapeHtml(
+tournamentMap.get(
+item.tournament_id
+) ||
+"Tournament"
+) +
+"</td>" +
+
+'<td class="' +
+(
+paidStatus
+? "aoca-admin-paid"
+: "aoca-admin-pending"
+) +
+'">' +
+(
+paidStatus
+? "PAID ✓"
+: "PENDING"
+) +
+"</td>" +
+
+"<td>" +
+escapeHtml(
+item.registration_status ||
+"—"
+) +
+"</td>";
+
+registrationTable
+.appendChild(row);
+
+}
+);
+
+}
+
+}
+catch(error){
+
+console.error(
+"DASHBOARD ERROR:",
+error
+);
+
+showError(
+"Could not load dashboard: " +
+(error.message || "Unknown error")
+);
+
+}
+
+}
+
+document
+.getElementById(
+"logoutButton"
+)
+.addEventListener(
+"click",
+logout
+);
+
+document
+.getElementById(
+"logoutButton2"
+)
+.addEventListener(
+"click",
+logout
+);
+
+document
+.getElementById(
+"refreshButton"
+)
+.addEventListener(
+"click",
+async function(){
+
+showSuccess(
+"Refreshing dashboard..."
+);
+
+await loadDashboard();
+
+showSuccess(
+"Dashboard refreshed."
+);
+
+}
+);
+
+document
+.getElementById(
+"createTournamentButton"
+)
+.addEventListener(
+"click",
+function(){
+
+window.location.href =
+"create-tournament.html";
+
+}
+);
+
+document
+.getElementById(
+"managePlayersButton"
+)
+.addEventListener(
+"click",
+function(){
+
+window.location.href =
+"admin-players.html";
+
+}
+);
+
+document
+.getElementById(
+"resultsButton"
+)
+.addEventListener(
+"click",
+function(){
+
+window.location.href =
+"admin-results.html";
+
+}
+);
+
+async function start(){
+
+const allowed =
+await checkAdmin();
+
+if(allowed){
+
+await loadDashboard();
+
+}
+
+}
+
+start();
+</script>
+
+</body>
+</html>

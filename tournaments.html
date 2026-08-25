@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>AOCA Tournaments</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
+<style>
+
+.loading-tournaments{
+    text-align:center;
+    padding:50px 20px;
+    color:#7f899d;
+}
+
+.loading-tournaments h2{
+    color:#fff;
+    font-size:18px;
+    margin-bottom:8px;
+}
+
+.tournament-error{
+    display:none;
+    margin:20px 0;
+    padding:15px;
+    border-radius:10px;
+    background:rgba(255,80,80,.10);
+    border:1px solid rgba(255,80,80,.30);
+    color:#ff8585;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.tournament-item{
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+    <div class="logo">
+        AOCA
+        <span>TOURNAMENT</span>
+    </div>
+
+    <button
+        class="login-btn"
+        id="headerLoginButton"
+        type="button"
+    >
+        Login
+    </button>
+
+</header>
+
+
+<main class="tournament-page">
+
+
+    <div class="page-heading">
+
+        <p class="small-title">
+            COMPETE & WIN
+        </p>
+
+        <h1>
+            Tournaments
+        </h1>
+
+    </div>
+
+
+    <!-- GAME FILTER -->
+
+    <div class="filters">
+
+        <button
+            class="filter active"
+            data-game="all"
+            type="button"
+        >
+            All
+        </button>
+
+        <button
+            class="filter"
+            data-game="BGMI"
+            type="button"
+        >
+            🎯 BGMI
+        </button>
+
+        <button
+            class="filter"
+            data-game="FREE FIRE"
+            type="button"
+        >
+            🔥 Free Fire
+        </button>
+
+    </div>
+
+
+    <!-- STATUS FILTER -->
+
+    <div class="status-filters">
+
+        <button
+            class="status active"
+            data-status="upcoming"
+            type="button"
+        >
+            Upcoming
+        </button>
+
+        <button
+            class="status"
+            data-status="live"
+            type="button"
+        >
+            🔴 Live
+        </button>
+
+        <button
+            class="status"
+            data-status="completed"
+            type="button"
+        >
+            Completed
+        </button>
+
+    </div>
+
+
+    <div
+        id="tournamentError"
+        class="tournament-error"
+    ></div>
+
+
+    <!-- TOURNAMENT LIST -->
+
+    <section id="tournamentList">
+
+        <div class="loading-tournaments">
+
+            <h2>
+                Loading tournaments...
+            </h2>
+
+            <p>
+                Please wait 🏆
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- EMPTY -->
+
+    <div
+        id="emptyMessage"
+        style="display:none;text-align:center;padding:40px 20px;color:#7f899d;"
+    >
+
+        <div style="font-size:40px;">
+            🏆
+        </div>
+
+        <h2 style="color:#fff;">
+            No tournaments found
+        </h2>
+
+        <p>
+            Check another game or status.
+        </p>
+
+    </div>
+
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+    <a href="index.html">
+        🏠
+        <span>
+            Home
+        </span>
+    </a>
+
+    <a
+        href="tournaments.html"
+        class="active-nav"
+    >
+        🏆
+        <span>
+            Tournaments
+        </span>
+    </a>
+
+    <a
+        href="profile.html"
+    >
+        👤
+        <span>
+            Profile
+        </span>
+    </a>
+
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+"use strict";
+
+
+/* =====================================
+   SUPABASE
+===================================== */
+
+const SUPABASE_URL =
+    "https://onvcwcaimtazjlaysvvv.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================
+   ELEMENTS
+===================================== */
+
+const tournamentList =
+    document.getElementById(
+        "tournamentList"
+    );
+
+const emptyMessage =
+    document.getElementById(
+        "emptyMessage"
+    );
+
+const errorBox =
+    document.getElementById(
+        "tournamentError"
+    );
+
+const gameFilters =
+    document.querySelectorAll(
+        ".filter"
+    );
+
+const statusFilters =
+    document.querySelectorAll(
+        ".status"
+    );
+
+
+/* =====================================
+   STATE
+===================================== */
+
+let tournaments = [];
+
+let selectedGame = "all";
+
+let selectedStatus = "upcoming";
+
+
+/* =====================================
+   ERROR
+===================================== */
+
+function showError(text){
+
+    errorBox.textContent =
+        text;
+
+    errorBox.style.display =
+        "block";
+
+}
+
+
+/* =====================================
+   MONEY
+===================================== */
+
+function formatMoney(value){
+
+    return "₹" +
+        Number(
+            value || 0
+        ).toLocaleString(
+            "en-IN"
+        );
+
+}
+
+
+/* =====================================
+   OPEN TOURNAMENT
+===================================== */
+
+function openTournament(tournament){
+
+    localStorage.setItem(
+        "selectedTournament",
+        tournament.name || ""
+    );
+
+    localStorage.setItem(
+        "selectedTournamentId",
+        tournament.id || ""
+    );
+
+    localStorage.setItem(
+        "selectedGame",
+        tournament.game || ""
+    );
+
+    window.location.href =
+        "tournament.html";
+
+}
+
+
+/* =====================================
+   RENDER
+===================================== */
+
+function renderTournaments(){
+
+    tournamentList.innerHTML =
+        "";
+
+    const filtered =
+        tournaments.filter(
+            function(tournament){
+
+                const game =
+                    String(
+                        tournament.game || ""
+                    )
+                    .trim()
+                    .toUpperCase();
+
+                const status =
+                    String(
+                        tournament.status ||
+                        "upcoming"
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                const gameMatch =
+                    selectedGame === "all" ||
+                    game ===
+                    selectedGame.toUpperCase();
+
+                const statusMatch =
+                    status ===
+                    selectedStatus;
+
+                return (
+                    gameMatch &&
+                    statusMatch
+                );
+
+            }
+        );
+
+
+    if(!filtered.length){
+
+        emptyMessage.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    emptyMessage.style.display =
+        "none";
+
+
+    filtered.forEach(
+        function(tournament){
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "tournament-item";
+
+
+            const game =
+                tournament.game ||
+                "GAME";
+
+
+            const name =
+                tournament.name ||
+                "AOCA Tournament";
+
+
+            const status =
+                String(
+                    tournament.status ||
+                    "upcoming"
+                )
+                .toLowerCase();
+
+
+            let statusText =
+                "UPCOMING";
+
+
+            if(status === "live"){
+
+                statusText =
+                    "🔴 LIVE";
+
+            }
+
+            else if(
+                status === "completed"
+            ){
+
+                statusText =
+                    "COMPLETED";
+
+            }
+
+
+            const players =
+                Number(
+                    tournament.current_players ||
+                    0
+                );
+
+
+            const maxPlayers =
+                Number(
+                    tournament.max_players ||
+                    0
+                );
+
+
+            card.innerHTML = `
+
+                <div class="tournament-top">
+
+                    <span class="game-label">
+                        ${escapeHtml(game)}
+                    </span>
+
+                    <span class="upcoming-label">
+                        ${statusText}
+                    </span>
+
+                </div>
+
+
+                <h2>
+                    ${escapeHtml(name)}
+                </h2>
+
+
+                <div class="tournament-details">
+
+                    <div>
+
+                        <small>
+                            PRIZE POOL
+                        </small>
+
+                        <strong>
+                            ${formatMoney(
+                                tournament.prize_pool
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <small>
+                            ENTRY
+                        </small>
+
+                        <strong>
+                            ${formatMoney(
+                                tournament.entry_fee
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <small>
+                            SLOTS
+                        </small>
+
+                        <strong>
+                            ${players}
+                            /
+                            ${maxPlayers}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="tournament-bottom">
+
+                    <span>
+                        🕐 Starting Soon
+                    </span>
+
+                    <button
+                        class="join-btn"
+                        type="button"
+                    >
+                        VIEW →
+                    </button>
+
+                </div>
+
+            `;
+
+
+            card.addEventListener(
+                "click",
+                function(event){
+
+                    if(
+                        event.target.closest(
+                            ".join-btn"
+                        )
+                    ){
+
+                        return;
+
+                    }
+
+                    openTournament(
+                        tournament
+                    );
+
+                }
+            );
+
+
+            const viewButton =
+                card.querySelector(
+                    ".join-btn"
+                );
+
+
+            viewButton.addEventListener(
+                "click",
+                function(){
+
+                    openTournament(
+                        tournament
+                    );
+
+                }
+            );
+
+
+            tournamentList.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   ESCAPE HTML
+===================================== */
+
+function escapeHtml(value){
+
+    return String(value || "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================
+   LOAD TOURNAMENTS
+===================================== */
+
+async function loadTournaments(){
+
+    console.log(
+        "AOCA: Loading tournaments..."
+    );
+
+
+    try{
+
+        const result =
+            await supabaseClient
+                .from("tournaments")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
+
+
+        if(result.error){
+
+            throw result.error;
+
+        }
+
+
+        tournaments =
+            result.data || [];
+
+
+        console.log(
+            "AOCA: Tournaments loaded:",
+            tournaments
+        );
+
+
+        /*
+         * If index/profile saved
+         * a selected game, use it
+         * automatically.
+         */
+
+        const savedGame =
+            localStorage.getItem(
+                "selectedGame"
+            );
+
+
+        if(savedGame){
+
+            const normalized =
+                savedGame
+                    .trim()
+                    .toUpperCase();
+
+
+            if(
+                normalized === "BGMI" ||
+                normalized === "FREE FIRE"
+            ){
+
+                selectedGame =
+                    normalized;
+
+
+                gameFilters.forEach(
+                    function(button){
+
+                        button.classList.remove(
+                            "active"
+                        );
+
+
+                        if(
+                            String(
+                                button.dataset.game
+                            ).toUpperCase() ===
+                            normalized
+                        ){
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+
+        }
+
+
+        renderTournaments();
+
+    }
+
+    catch(error){
+
+        console.error(
+            "AOCA TOURNAMENT ERROR:",
+            error
+        );
+
+
+        tournamentList.innerHTML =
+            "";
+
+
+        showError(
+            "Unable to load tournaments: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+
+        emptyMessage.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================
+   GAME FILTERS
+===================================== */
+
+gameFilters.forEach(
+    function(button){
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                gameFilters.forEach(
+                    function(item){
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                selectedGame =
+                    button.dataset.game;
+
+
+                localStorage.setItem(
+                    "selectedGame",
+                    selectedGame
+                );
+
+
+                renderTournaments();
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================
+   STATUS FILTERS
+===================================== */
+
+statusFilters.forEach(
+    function(button){
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                statusFilters.forEach(
+                    function(item){
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                selectedStatus =
+                    button.dataset.status;
+
+
+                renderTournaments();
+
+            }
+        );
+
+    }
+);
+
+
+/* =====================================
+   HEADER LOGIN
+===================================== */
+
+const headerLoginButton =
+    document.getElementById(
+        "headerLoginButton"
+    );
+
+
+if(headerLoginButton){
+
+    headerLoginButton.addEventListener(
+        "click",
+        async function(){
+
+            try{
+
+                const result =
+                    await supabaseClient
+                        .auth
+                        .getSession();
+
+
+                if(
+                    result.data &&
+                    result.data.session
+                ){
+
+                    window.location.href =
+                        "profile.html";
+
+                }
+
+                else{
+
+                    window.location.href =
+                        "login.html";
+
+                }
+
+            }
+
+            catch(error){
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================
+   START
+===================================== */
+
+loadTournaments();
+
+
+console.log(
+    "AOCA TOURNAMENTS PAGE READY 🏆"
+);
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Join Tournament | AOCA</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.register-page{
+max-width:850px;
+margin:auto;
+padding:30px 18px 100px
+}
+
+.back-btn{
+background:none;
+border:0;
+color:#9aa4b8;
+font-size:15px;
+padding:0;
+margin-bottom:28px;
+cursor:pointer
+}
+
+.small-title{
+color:#8d9aff;
+font-size:13px;
+font-weight:900;
+letter-spacing:2px;
+margin-bottom:8px
+}
+
+.register-page h1{
+color:#fff;
+font-size:32px;
+margin:0 0 8px
+}
+
+.register-subtitle{
+color:#7f899d;
+margin-bottom:25px
+}
+
+.register-tournament-card,
+.payment-summary{
+background:#111722;
+border:1px solid #252d3d;
+border-radius:18px;
+padding:20px;
+margin-bottom:25px
+}
+
+.register-tournament-card{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px
+}
+
+.register-tournament-card span{
+color:#8d9aff;
+font-size:14px;
+font-weight:900
+}
+
+.register-tournament-card h2{
+color:#fff;
+font-size:20px;
+margin:8px 0 0
+}
+
+.register-tournament-card strong{
+color:#fff;
+font-size:24px;
+white-space:nowrap
+}
+
+.form-group{
+margin-bottom:18px
+}
+
+.form-group label{
+display:block;
+color:#d9deea;
+font-size:14px;
+font-weight:800;
+margin-bottom:8px
+}
+
+.form-group input{
+width:100%;
+box-sizing:border-box;
+background:#111722;
+color:#fff;
+border:1px solid #30394d;
+border-radius:12px;
+padding:14px;
+font-size:15px;
+outline:none
+}
+
+.form-group input:focus{
+border-color:#7c8cff
+}
+
+.participation-options{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px
+}
+
+.option-card{
+background:#111722;
+border:1px solid #30394d;
+border-radius:12px;
+padding:14px;
+color:#fff;
+cursor:pointer
+}
+
+.option-card input{
+width:auto;
+margin-right:8px
+}
+
+.terms{
+display:flex;
+gap:10px;
+color:#9aa4b8;
+font-size:13px;
+line-height:1.5;
+margin:20px 0
+}
+
+.terms input{
+width:18px;
+height:18px;
+flex-shrink:0
+}
+
+.continue-btn,
+.payment-btn{
+width:100%;
+border:0;
+border-radius:14px;
+padding:16px;
+font-size:15px;
+font-weight:900;
+cursor:pointer
+}
+
+.continue-btn{
+background:#7c8cff;
+color:#080b12
+}
+
+.payment-btn{
+background:#70e09b;
+color:#07100b;
+margin-top:12px
+}
+
+.continue-btn:disabled,
+.payment-btn:disabled{
+opacity:.6;
+cursor:not-allowed
+}
+
+.success-box,
+.error-box{
+padding:16px;
+border-radius:12px;
+margin-bottom:20px;
+line-height:1.5
+}
+
+.success-box{
+background:rgba(70,220,130,.1);
+border:1px solid rgba(70,220,130,.3);
+color:#70e09b
+}
+
+.error-box{
+background:rgba(255,80,80,.1);
+border:1px solid rgba(255,80,80,.3);
+color:#ff8585
+}
+
+.hidden{
+display:none!important
+}
+
+.payment-summary h3{
+color:#fff;
+margin-top:0
+}
+
+.payment-row{
+display:flex;
+justify-content:space-between;
+color:#9aa4b8;
+margin:10px 0
+}
+
+.payment-row strong{
+color:#fff
+}
+
+@media(max-width:600px){
+
+.register-page{
+padding:25px 15px 80px
+}
+
+.register-page h1{
+font-size:27px
+}
+
+.participation-options{
+grid-template-columns:1fr
+}
+
+.register-tournament-card h2{
+font-size:17px
+}
+
+.register-tournament-card strong{
+font-size:20px
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+<div class="logo">
+AOCA
+<span>TOURNAMENT</span>
+</div>
+
+<button
+class="login-btn"
+id="loginButton"
+type="button"
+>
+Login
+</button>
+
+</header>
+
+<main class="register-page">
+
+<button
+class="back-btn"
+type="button"
+onclick="history.back()"
+>
+← Back
+</button>
+
+<p class="small-title">
+TOURNAMENT REGISTRATION
+</p>
+
+<h1>
+Join Tournament
+</h1>
+
+<p class="register-subtitle">
+Enter your gaming details to register.
+</p>
+
+<div class="register-tournament-card">
+
+<div>
+
+<span id="registerGame">
+🎯 BGMI
+</span>
+
+<h2 id="registerTournamentName">
+Loading tournament...
+</h2>
+
+</div>
+
+<strong id="registerEntryFee">
+₹0
+</strong>
+
+</div>
+
+<div
+id="registerMessage"
+class="hidden"
+></div>
+
+<form
+id="registrationForm"
+novalidate
+>
+
+<div class="form-group">
+
+<label for="playerName">
+Player Name
+</label>
+
+<input
+type="text"
+id="playerName"
+placeholder="Enter your name"
+autocomplete="name"
+>
+
+</div>
+
+<div class="form-group">
+
+<label for="gameName">
+In-Game Name
+</label>
+
+<input
+type="text"
+id="gameName"
+placeholder="Your BGMI name"
+>
+
+</div>
+
+<div class="form-group">
+
+<label for="gameUid">
+Game UID
+</label>
+
+<input
+type="text"
+id="gameUid"
+placeholder="Enter your BGMI UID"
+inputmode="numeric"
+>
+
+</div>
+
+<div class="form-group">
+
+<label for="phone">
+Phone Number
+</label>
+
+<input
+type="tel"
+id="phone"
+placeholder="Enter phone number"
+inputmode="numeric"
+maxlength="10"
+autocomplete="tel"
+>
+
+</div>
+
+<div class="form-group">
+
+<label>
+Participation Type
+</label>
+
+<div class="participation-options">
+
+<label class="option-card">
+
+<input
+type="radio"
+name="participation"
+value="solo"
+checked
+>
+
+👤 Solo
+
+</label>
+
+<label class="option-card">
+
+<input
+type="radio"
+name="participation"
+value="team"
+>
+
+👥 Team
+
+</label>
+
+</div>
+
+</div>
+
+<label class="terms">
+
+<input
+type="checkbox"
+id="agreeTerms"
+>
+
+<span>
+I agree to the tournament rules and understand
+that cheating may result in disqualification.
+</span>
+
+</label>
+
+<button
+type="submit"
+id="continueButton"
+class="continue-btn"
+>
+CONTINUE →
+</button>
+
+</form>
+
+<div
+id="paymentSection"
+class="payment-summary hidden"
+>
+
+<h3>
+💳 Complete Payment
+</h3>
+
+<div class="payment-row">
+
+<span>
+Tournament
+</span>
+
+<strong id="paymentTournament">
+-
+</strong>
+
+</div>
+
+<div class="payment-row">
+
+<span>
+Entry Fee
+</span>
+
+<strong id="paymentAmount">
+₹0
+</strong>
+
+</div>
+
+<button
+type="button"
+id="payButton"
+class="payment-btn"
+>
+PAY NOW
+</button>
+
+</div>
+
+</main>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+"use strict";
+
+/* =========================
+   CONFIG
+========================= */
+
+const SUPABASE_URL =
+"https://onvcwcaimtazjlaysvvv.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+const RAZORPAY_KEY_ID =
+"rzp_test_TTld6x2ybduAtE";
+
+const CREATE_PAYMENT_URL =
+SUPABASE_URL +
+"/functions/v1/create-payment";
+
+const VERIFY_PAYMENT_URL =
+SUPABASE_URL +
+"/functions/v1/verify-payment";
+
+/* =========================
+   SUPABASE
+========================= */
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const form =
+document.getElementById(
+"registrationForm"
+);
+
+const tournamentName =
+document.getElementById(
+"registerTournamentName"
+);
+
+const registerGame =
+document.getElementById(
+"registerGame"
+);
+
+const entryFee =
+document.getElementById(
+"registerEntryFee"
+);
+
+const continueButton =
+document.getElementById(
+"continueButton"
+);
+
+const messageBox =
+document.getElementById(
+"registerMessage"
+);
+
+const loginButton =
+document.getElementById(
+"loginButton"
+);
+
+const paymentSection =
+document.getElementById(
+"paymentSection"
+);
+
+const paymentTournament =
+document.getElementById(
+"paymentTournament"
+);
+
+const paymentAmount =
+document.getElementById(
+"paymentAmount"
+);
+
+const payButton =
+document.getElementById(
+"payButton"
+);
+
+/* =========================
+   STATE
+========================= */
+
+let currentTournament = null;
+let currentRegistration = null;
+
+/* =========================
+   HELPERS
+========================= */
+
+function showMessage(
+text,
+type
+){
+
+messageBox.textContent =
+text;
+
+messageBox.className =
+type === "success"
+? "success-box"
+: "error-box";
+}
+
+function hideMessage(){
+
+messageBox.textContent =
+"";
+
+messageBox.className =
+"hidden";
+}
+
+function money(value){
+
+return "₹" +
+Number(value || 0)
+.toLocaleString("en-IN");
+}
+
+async function getSession(){
+
+const result =
+await supabaseClient
+.auth
+.getSession();
+
+if(result.error){
+
+throw result.error;
+}
+
+return result.data &&
+result.data.session
+? result.data.session
+: null;
+}
+
+/* =========================
+   LOAD TOURNAMENT
+========================= */
+
+async function loadTournament(){
+
+const tournamentId =
+localStorage.getItem(
+"selectedTournamentId"
+);
+
+const savedName =
+localStorage.getItem(
+"selectedTournament"
+);
+
+const savedGame =
+localStorage.getItem(
+"selectedGame"
+);
+
+if(!tournamentId){
+
+tournamentName.textContent =
+savedName ||
+"Tournament not selected";
+
+showMessage(
+"Please go back and select a tournament.",
+"error"
+);
+
+return;
+}
+
+try{
+
+const result =
+await supabaseClient
+.from("tournaments")
+.select(
+"id,name,game,entry_fee"
+)
+.eq(
+"id",
+tournamentId
+)
+.single();
+
+if(result.error){
+
+throw result.error;
+}
+
+currentTournament =
+result.data;
+
+tournamentName.textContent =
+currentTournament.name ||
+savedName ||
+"Tournament";
+
+entryFee.textContent =
+money(
+currentTournament.entry_fee
+);
+
+paymentTournament.textContent =
+currentTournament.name ||
+"Tournament";
+
+paymentAmount.textContent =
+money(
+currentTournament.entry_fee
+);
+
+const game =
+String(
+currentTournament.game ||
+savedGame ||
+"BGMI"
+)
+.trim()
+.toUpperCase();
+
+registerGame.textContent =
+game.includes("FREE")
+? "🔥 FREE FIRE"
+: "🎯 BGMI";
+
+}catch(error){
+
+console.error(
+"TOURNAMENT LOAD ERROR:",
+error
+);
+
+showMessage(
+"Could not load tournament: " +
+(
+error.message ||
+"Unknown error"
+),
+"error"
+);
+}
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+loginButton.addEventListener(
+"click",
+async function(){
+
+try{
+
+const session =
+await getSession();
+
+if(session){
+
+window.location.href =
+"profile.html";
+
+}else{
+
+window.location.href =
+"login.html";
+}
+
+}catch(error){
+
+window.location.href =
+"login.html";
+}
+}
+);
+
+/* =========================
+   REGISTRATION
+========================= */
+
+form.addEventListener(
+"submit",
+async function(event){
+
+event.preventDefault();
+
+event.stopPropagation();
+
+hideMessage();
+
+const playerName =
+document.getElementById(
+"playerName"
+).value.trim();
+
+const gameName =
+document.getElementById(
+"gameName"
+).value.trim();
+
+const gameUid =
+document.getElementById(
+"gameUid"
+).value.trim();
+
+const phone =
+document.getElementById(
+"phone"
+).value.trim();
+
+const agreeTerms =
+document.getElementById(
+"agreeTerms"
+).checked;
+
+const participation =
+document.querySelector(
+'input[name="participation"]:checked'
+);
+
+const participationType =
+participation
+? participation.value
+: "solo";
+
+const tournamentId =
+localStorage.getItem(
+"selectedTournamentId"
+);
+
+if(!playerName){
+
+showMessage(
+"Please enter your player name.",
+"error"
+);
+
+return;
+}
+
+if(!gameName){
+
+showMessage(
+"Please enter your in-game name.",
+"error"
+);
+
+return;
+}
+
+if(!gameUid){
+
+showMessage(
+"Please enter your Game UID.",
+"error"
+);
+
+return;
+}
+
+if(!/^[0-9]+$/.test(gameUid)){
+
+showMessage(
+"Game UID should contain numbers only.",
+"error"
+);
+
+return;
+}
+
+if(!phone){
+
+showMessage(
+"Please enter your phone number.",
+"error"
+);
+
+return;
+}
+
+if(!/^[0-9]{10}$/.test(phone)){
+
+showMessage(
+"Please enter a valid 10-digit phone number.",
+"error"
+);
+
+return;
+}
+
+if(!agreeTerms){
+
+showMessage(
+"Please accept the tournament rules.",
+"error"
+);
+
+return;
+}
+
+if(!tournamentId){
+
+showMessage(
+"Tournament ID is missing.",
+"error"
+);
+
+return;
+}
+
+if(
+!currentTournament ||
+!currentTournament.id
+){
+
+showMessage(
+"Tournament information is not loaded. Please refresh.",
+"error"
+);
+
+return;
+}
+
+continueButton.disabled =
+true;
+
+continueButton.textContent =
+"CHECKING...";
+
+try{
+
+const session =
+await getSession();
+
+if(!session){
+
+showMessage(
+"Please login before joining the tournament.",
+"error"
+);
+
+continueButton.disabled =
+false;
+
+continueButton.textContent =
+"CONTINUE →";
+
+return;
+}
+
+const user =
+session.user;
+
+/* CHECK EXISTING */
+
+const existing =
+await supabaseClient
+.from("registrations")
+.select(
+"id,tournament_id,user_id,payment_status,registration_status"
+)
+.eq(
+"tournament_id",
+tournamentId
+)
+.eq(
+"user_id",
+user.id
+)
+.limit(1);
+
+if(existing.error){
+
+throw existing.error;
+}
+
+if(
+existing.data &&
+existing.data.length > 0
+){
+
+currentRegistration =
+existing.data[0];
+
+localStorage.setItem(
+"registrationId",
+currentRegistration.id
+);
+
+if(
+String(
+currentRegistration.payment_status ||
+""
+).toLowerCase() === "paid"
+){
+
+showMessage(
+"You are already registered and paid for this tournament.",
+"success"
+);
+
+continueButton.textContent =
+"PAID ✓";
+
+continueButton.disabled =
+true;
+
+return;
+}
+
+paymentSection.classList.remove(
+"hidden"
+);
+
+showMessage(
+"Registration already exists. Complete payment below.",
+"success"
+);
+
+continueButton.textContent =
+"REGISTRATION FOUND ✓";
+
+continueButton.disabled =
+false;
+
+paymentSection.scrollIntoView({
+behavior:"smooth"
+});
+
+return;
+}
+
+/* CREATE REGISTRATION */
+
+continueButton.textContent =
+"REGISTERING...";
+
+const inserted =
+await supabaseClient
+.from("registrations")
+.insert({
+
+tournament_id:
+tournamentId,
+
+user_id:
+user.id,
+
+game_uid:
+gameUid,
+
+in_game_name:
+gameName,
+
+participation_type:
+participationType,
+
+payment_status:
+"pending",
+
+registration_status:
+"registered"
+
+})
+.select(
+"id,tournament_id,user_id,payment_status,registration_status"
+)
+.single();
+
+if(inserted.error){
+
+throw inserted.error;
+}
+
+currentRegistration =
+inserted.data;
+
+localStorage.setItem(
+"registrationId",
+currentRegistration.id
+);
+
+localStorage.setItem(
+"registrationData",
+JSON.stringify({
+
+playerName:
+playerName,
+
+gameName:
+gameName,
+
+gameUid:
+gameUid,
+
+phone:
+phone,
+
+participation:
+participationType,
+
+tournamentId:
+tournamentId,
+
+registrationId:
+currentRegistration.id
+
+})
+);
+
+paymentSection.classList.remove(
+"hidden"
+);
+
+showMessage(
+"Registration created. Complete payment to confirm your slot.",
+"success"
+);
+
+continueButton.textContent =
+"REGISTRATION CREATED ✓";
+
+continueButton.disabled =
+false;
+
+paymentSection.scrollIntoView({
+behavior:"smooth"
+});
+
+}catch(error){
+
+console.error(
+"REGISTRATION ERROR:",
+error
+);
+
+continueButton.disabled =
+false;
+
+continueButton.textContent =
+"CONTINUE →";
+
+showMessage(
+"Registration failed: " +
+(
+error.message ||
+"Unknown error"
+),
+"error"
+);
+}
+}
+);
+
+/* =========================
+   CREATE PAYMENT ORDER
+========================= */
+
+async function createPaymentOrder(){
+
+const session =
+await getSession();
+
+if(!session){
+
+throw new Error(
+"Please login again."
+);
+}
+
+if(
+!currentRegistration ||
+!currentRegistration.id
+){
+
+throw new Error(
+"Registration ID is missing."
+);
+}
+
+if(
+!currentTournament ||
+!currentTournament.id
+){
+
+throw new Error(
+"Tournament ID is missing."
+);
+}
+
+const body = {
+
+registration_id:
+currentRegistration.id,
+
+tournament_id:
+currentTournament.id
+};
+
+console.log(
+"CREATE PAYMENT REQUEST:",
+body
+);
+
+const response =
+await fetch(
+CREATE_PAYMENT_URL,
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " +
+session.access_token,
+
+"apikey":
+SUPABASE_KEY
+
+},
+
+body:
+JSON.stringify(body)
+
+}
+);
+
+const data =
+await response
+.json()
+.catch(
+function(){
+return null;
+}
+);
+
+console.log(
+"CREATE PAYMENT RESPONSE:",
+data
+);
+
+if(!response.ok){
+
+throw new Error(
+data && data.error
+? data.error
+: "Could not create payment order."
+);
+}
+
+if(
+!data ||
+!data.order_id
+){
+
+throw new Error(
+"Payment order ID was not returned."
+);
+}
+
+return data;
+}
+
+/* =========================
+   VERIFY PAYMENT
+========================= */
+
+async function verifyPayment(
+payment
+){
+
+const session =
+await getSession();
+
+if(!session){
+
+throw new Error(
+"Please login again."
+);
+}
+
+const body = {
+
+registration_id:
+currentRegistration.id,
+
+tournament_id:
+currentTournament.id,
+
+razorpay_payment_id:
+payment.razorpay_payment_id,
+
+razorpay_order_id:
+payment.razorpay_order_id,
+
+razorpay_signature:
+payment.razorpay_signature
+
+};
+
+const response =
+await fetch(
+VERIFY_PAYMENT_URL,
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":
+"application/json",
+
+"Authorization":
+"Bearer " +
+session.access_token,
+
+"apikey":
+SUPABASE_KEY
+
+},
+
+body:
+JSON.stringify(body)
+
+}
+);
+
+const data =
+await response
+.json()
+.catch(
+function(){
+return null;
+}
+);
+
+console.log(
+"VERIFY PAYMENT RESPONSE:",
+data
+);
+
+if(!response.ok){
+
+throw new Error(
+data && data.error
+? data.error
+: "Payment verification failed."
+);
+}
+
+if(
+!data ||
+data.success !== true
+){
+
+throw new Error(
+data && data.error
+? data.error
+: "Payment verification failed."
+);
+}
+
+return data;
+}
+
+/* =========================
+   PAY NOW
+========================= */
+
+payButton.addEventListener(
+"click",
+async function(){
+
+hideMessage();
+
+if(
+typeof window.Razorpay ===
+"undefined"
+){
+
+showMessage(
+"Razorpay Checkout did not load. Please refresh.",
+"error"
+);
+
+return;
+}
+
+if(
+!currentRegistration ||
+!currentRegistration.id
+){
+
+showMessage(
+"Please complete registration first.",
+"error"
+);
+
+return;
+}
+
+if(
+!currentTournament ||
+!currentTournament.id
+){
+
+showMessage(
+"Tournament information is missing.",
+"error"
+);
+
+return;
+}
+
+payButton.disabled =
+true;
+
+payButton.textContent =
+"CREATING PAYMENT...";
+
+try{
+
+const order =
+await createPaymentOrder();
+
+const session =
+await getSession();
+
+if(!session){
+
+throw new Error(
+"Login session expired."
+);
+}
+
+const playerName =
+document.getElementById(
+"playerName"
+).value.trim();
+
+const phone =
+document.getElementById(
+"phone"
+).value.trim();
+
+const options = {
+
+key:
+RAZORPAY_KEY_ID,
+
+amount:
+Number(
+order.amount
+),
+
+currency:
+order.currency ||
+"INR",
+
+name:
+"AOCA Tournament",
+
+description:
+currentTournament.name ||
+"Tournament Entry Fee",
+
+order_id:
+order.order_id,
+
+prefill:{
+
+name:
+playerName,
+
+email:
+session.user &&
+session.user.email
+? session.user.email
+: "",
+
+contact:
+phone
+
+},
+
+notes:{
+
+registration_id:
+currentRegistration.id,
+
+tournament_id:
+currentTournament.id
+
+},
+
+theme:{
+
+color:
+"#7c8cff"
+
+},
+
+handler:
+async function(payment){
+
+payButton.disabled =
+true;
+
+payButton.textContent =
+"VERIFYING...";
+
+showMessage(
+"Payment received. Verifying...",
+"success"
+);
+
+try{
+
+await verifyPayment(
+payment
+);
+
+localStorage.setItem(
+"paymentStatus",
+"paid"
+);
+
+localStorage.setItem(
+"razorpayPaymentId",
+payment.razorpay_payment_id
+);
+
+localStorage.setItem(
+"razorpayOrderId",
+payment.razorpay_order_id
+);
+
+currentRegistration.payment_status =
+"paid";
+
+form.classList.add(
+"hidden"
+);
+
+paymentSection.innerHTML =
+'<div class="success-box">' +
+'<strong>🎉 Payment Successful!</strong>' +
+'<br><br>' +
+'Your tournament registration is confirmed.' +
+'<br><br>' +
+'<strong>Payment ID:</strong><br>' +
+payment.razorpay_payment_id +
+'<br><br>' +
+'<strong>Order ID:</strong><br>' +
+payment.razorpay_order_id +
+'</div>';
+
+paymentSection.classList.remove(
+"hidden"
+);
+
+continueButton.textContent =
+"PAID ✓";
+
+continueButton.disabled =
+true;
+
+showMessage(
+"Payment verified successfully! Your slot is confirmed. 🏆",
+"success"
+);
+
+}catch(error){
+
+console.error(
+"VERIFY ERROR:",
+error
+);
+
+payButton.disabled =
+false;
+
+payButton.textContent =
+"TRY AGAIN";
+
+showMessage(
+"Payment verification failed: " +
+(
+error.message ||
+"Unknown error"
+),
+"error"
+);
+}
+},
+
+modal:{
+
+ondismiss:
+function(){
+
+payButton.disabled =
+false;
+
+payButton.textContent =
+"PAY NOW";
+
+showMessage(
+"Payment cancelled. Your registration is still pending.",
+"error"
+);
+}
+
+}
+
+};
+
+const razorpay =
+new Razorpay(
+options
+);
+
+razorpay.on(
+"payment.failed",
+function(response){
+
+console.error(
+"RAZORPAY PAYMENT FAILED:",
+response
+);
+
+payButton.disabled =
+false;
+
+payButton.textContent =
+"PAY NOW";
+
+let errorMessage =
+"Payment failed. Please try again.";
+
+if(
+response &&
+response.error &&
+response.error.description
+){
+
+errorMessage =
+response.error.description;
+}
+
+showMessage(
+errorMessage,
+"error"
+);
+}
+);
+
+razorpay.open();
+
+}catch(error){
+
+console.error(
+"PAYMENT ERROR:",
+error
+);
+
+payButton.disabled =
+false;
+
+payButton.textContent =
+"PAY NOW";
+
+showMessage(
+"Unable to start payment: " +
+(
+error.message ||
+"Unknown error"
+),
+"error"
+);
+}
+}
+);
+
+/* =========================
+   START
+========================= */
+
+loadTournament();
+
+console.log(
+"AOCA REGISTER PAGE READY"
+);
+
+</script>
+
+</body>
+</html>

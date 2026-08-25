@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Create Account | AOCA Tournament</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* =========================================
+           REGISTER PAGE
+        ========================================= */
+
+        .auth-page {
+            min-height: calc(100vh - 80px);
+            padding: 30px 24px 50px;
+        }
+
+        .auth-container {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .auth-back {
+            background: transparent;
+            border: none;
+            color: #9aa4b8;
+            font-size: 14px;
+            padding: 0;
+            margin-bottom: 35px;
+            cursor: pointer;
+        }
+
+        .auth-label {
+            color: #8994aa;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .auth-title {
+            font-size: 34px;
+            margin: 0 0 10px;
+            color: #ffffff;
+        }
+
+        .auth-subtitle {
+            color: #7f899d;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .auth-card {
+            background: #111722;
+            border: 1px solid #252d3d;
+            border-radius: 16px;
+            padding: 22px;
+        }
+
+        .auth-form-group {
+            margin-bottom: 18px;
+        }
+
+        .auth-form-group label {
+            display: block;
+            color: #b7bfce;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .auth-form-group input {
+            width: 100%;
+            height: 50px;
+            box-sizing: border-box;
+
+            padding: 0 14px;
+
+            background: #0b0f17;
+            border: 1px solid #293246;
+            border-radius: 10px;
+
+            color: #ffffff;
+            font-size: 14px;
+
+            outline: none;
+        }
+
+        .auth-form-group input:focus {
+            border-color: #7c8cff;
+        }
+
+        .auth-form-group input::placeholder {
+            color: #596477;
+        }
+
+        .password-note {
+            color: #626d80;
+            font-size: 10px;
+            margin-top: 7px;
+        }
+
+        .auth-button {
+            width: 100%;
+            height: 52px;
+
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #7c8cff;
+            color: #080b12;
+
+            font-size: 14px;
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .auth-message {
+            display: none;
+
+            margin-top: 18px;
+            padding: 13px;
+
+            border-radius: 10px;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .auth-message.success {
+            display: block;
+            background: rgba(64, 200, 130, 0.10);
+            border: 1px solid rgba(64, 200, 130, 0.30);
+            color: #62d89a;
+        }
+
+        .auth-message.error {
+            display: block;
+            background: rgba(255, 80, 80, 0.10);
+            border: 1px solid rgba(255, 80, 80, 0.30);
+            color: #ff8585;
+        }
+
+        .auth-login {
+            text-align: center;
+            color: #737e92;
+            font-size: 12px;
+            margin-top: 22px;
+        }
+
+        .auth-login button {
+            background: none;
+            border: none;
+            color: #8d9aff;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <header class="topbar">
+
+        <div class="logo">
+
+            AOCA
+
+            <span>
+                TOURNAMENT
+            </span>
+
+        </div>
+
+
+        <button
+            class="login-btn"
+            onclick="window.location.href='login.html'"
+        >
+            Login
+        </button>
+
+    </header>
+
+
+    <!-- =========================================
+         REGISTER PAGE
+    ========================================== -->
+
+    <main class="auth-page">
+
+        <div class="auth-container">
+
+
+            <button
+                class="auth-back"
+                onclick="history.back()"
+            >
+                ← Back
+            </button>
+
+
+            <div class="auth-label">
+                AOCA TOURNAMENT
+            </div>
+
+
+            <h1 class="auth-title">
+                Create Account
+            </h1>
+
+
+            <p class="auth-subtitle">
+                Create your AOCA Tournament account
+                and start competing in BGMI and Free Fire.
+            </p>
+
+
+            <div class="auth-card">
+
+
+                <form id="registerForm">
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="auth-form-group">
+
+                        <label for="fullName">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- USERNAME -->
+
+                    <div class="auth-form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Choose a username"
+                            autocomplete="username"
+                            minlength="3"
+                            maxlength="30"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="auth-form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="auth-form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <div class="password-note">
+                            Password must contain at least 6 characters.
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="auth-form-group">
+
+                        <label for="confirmPassword">
+                            Confirm Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Enter password again"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
+                    <button
+                        type="submit"
+                        class="auth-button"
+                        id="registerButton"
+                    >
+                        CREATE ACCOUNT →
+                    </button>
+
+
+                </form>
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="authMessage"
+                    class="auth-message"
+                ></div>
+
+
+            </div>
+
+
+            <div class="auth-login">
+
+                Already have an account?
+
+                <button
+                    type="button"
+                    onclick="window.location.href='login.html'"
+                >
+                    Login
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         SUPABASE
+    ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        /* =========================================
+           AOCA SUPABASE CONNECTION
+        ========================================== */
+
+        const SUPABASE_URL =
+            "https://onvcwcaimtazjlaysvvv.supabase.co";
+
+
+        const SUPABASE_PUBLISHABLE_KEY =
+            "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_PUBLISHABLE_KEY
+            );
+
+
+        /* =========================================
+           ELEMENTS
+        ========================================== */
+
+        const registerForm =
+            document.querySelector("#registerForm");
+
+
+        const registerButton =
+            document.querySelector("#registerButton");
+
+
+        const authMessage =
+            document.querySelector("#authMessage");
+
+
+        /* =========================================
+           MESSAGE FUNCTION
+        ========================================== */
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            authMessage.textContent =
+                message;
+
+            authMessage.className =
+                "auth-message " + type;
+
+        }
+
+
+        /* =========================================
+           REGISTER
+        ========================================== */
+
+        registerForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const fullName =
+                    document
+                        .querySelector("#fullName")
+                        .value
+                        .trim();
+
+
+                const username =
+                    document
+                        .querySelector("#username")
+                        .value
+                        .trim();
+
+
+                const email =
+                    document
+                        .querySelector("#email")
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .querySelector("#password")
+                        .value;
+
+
+                const confirmPassword =
+                    document
+                        .querySelector("#confirmPassword")
+                        .value;
+
+
+                /* ==============================
+                   VALIDATION
+                ============================== */
+
+                if (fullName.length < 2) {
+
+                    showMessage(
+                        "Please enter your full name.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (username.length < 3) {
+
+                    showMessage(
+                        "Username must contain at least 3 characters.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !/^[a-zA-Z0-9_]+$/.test(username)
+                ) {
+
+                    showMessage(
+                        "Username can contain only letters, numbers and underscores.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (password.length < 6) {
+
+                    showMessage(
+                        "Password must contain at least 6 characters.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (password !== confirmPassword) {
+
+                    showMessage(
+                        "Passwords do not match.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                /* ==============================
+                   DISABLE BUTTON
+                ============================== */
+
+                registerButton.disabled =
+                    true;
+
+                registerButton.textContent =
+                    "CREATING ACCOUNT...";
+
+
+                showMessage(
+                    "",
+                    ""
+                );
+
+
+                /* ==============================
+                   SUPABASE SIGN UP
+                ============================== */
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.signUp({
+
+                            email: email,
+
+                            password: password,
+
+                            options: {
+
+                                data: {
+
+                                    username:
+                                        username,
+
+                                    full_name:
+                                        fullName
+
+                                }
+
+                            }
+
+                        });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    /* ==============================
+                       SUCCESS
+                    ============================== */
+
+                    if (
+                        data.user &&
+                        !data.session
+                    ) {
+
+                        showMessage(
+                            "Account created successfully! 📧 Check your email to confirm your account, then login.",
+                            "success"
+                        );
+
+                    } else {
+
+                        showMessage(
+                            "Account created successfully! 🏆 Redirecting...",
+                            "success"
+                        );
+
+
+                        setTimeout(
+                            function () {
+
+                                window.location.href =
+                                    "profile.html";
+
+                            },
+                            1200
+                        );
+
+                    }
+
+
+                    registerForm.reset();
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AOCA Registration Error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        error.message ||
+                        "Unable to create account. Please try again.",
+                        "error"
+                    );
+
+                }
+
+
+                finally {
+
+                    registerButton.disabled =
+                        false;
+
+                    registerButton.textContent =
+                        "CREATE ACCOUNT →";
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

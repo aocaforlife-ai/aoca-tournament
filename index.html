@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AOCA Tournament</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="logo">
+        AOCA <span>TOURNAMENT</span>
+    </div>
+
+    <button
+        class="login-btn"
+        id="loginButton"
+        type="button"
+    >
+        Login
+    </button>
+
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <p class="small-title">
+            WELCOME TO
+        </p>
+
+        <h1>
+            AOCA<br>
+            <span>TOURNAMENT</span>
+        </h1>
+
+        <p class="hero-text">
+            Compete. Win. Conquer.
+        </p>
+
+        <div class="hero-buttons">
+
+            <button
+                class="primary-btn"
+                id="findTournamentButton"
+                type="button"
+            >
+                🎮 Find Tournament
+            </button>
+
+            <button
+                class="secondary-btn"
+                id="createAccountButton"
+                type="button"
+            >
+                👤 Create Account
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- GAMES -->
+
+    <section class="games">
+
+        <h2>
+            Choose Your Game
+        </h2>
+
+        <div class="game-container">
+
+
+            <!-- BGMI -->
+
+            <div class="game-card bgmi">
+
+                <div class="game-icon">
+                    🎯
+                </div>
+
+                <h3>
+                    BGMI
+                </h3>
+
+                <p>
+                    Battle Royale Tournaments
+                </p>
+
+                <button
+                    type="button"
+                    class="gameTournamentButton"
+                    data-game="BGMI"
+                >
+                    View Tournaments
+                </button>
+
+            </div>
+
+
+            <!-- FREE FIRE -->
+
+            <div class="game-card freefire">
+
+                <div class="game-icon">
+                    🔥
+                </div>
+
+                <h3>
+                    FREE FIRE
+                </h3>
+
+                <p>
+                    Battle Royale Tournaments
+                </p>
+
+                <button
+                    type="button"
+                    class="gameTournamentButton"
+                    data-game="Free Fire"
+                >
+                    View Tournaments
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- UPCOMING -->
+
+    <section class="upcoming">
+
+        <h2>
+            🔥 Upcoming Tournaments
+        </h2>
+
+
+        <div class="tournament-card">
+
+            <div>
+
+                <span class="game-label">
+                    BGMI
+                </span>
+
+                <h3>
+                    AOCA Battle #001
+                </h3>
+
+                <p>
+                    👥 0 / 100 Players
+                </p>
+
+            </div>
+
+
+            <div class="tournament-info">
+
+                <strong>
+                    ₹500
+                </strong>
+
+                <small>
+                    Prize Pool
+                </small>
+
+                <span>
+                    Entry ₹10
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="tournament-card">
+
+            <div>
+
+                <span class="game-label">
+                    FREE FIRE
+                </span>
+
+                <h3>
+                    AOCA Clash #001
+                </h3>
+
+                <p>
+                    👥 0 / 48 Players
+                </p>
+
+            </div>
+
+
+            <div class="tournament-info">
+
+                <strong>
+                    ₹300
+                </strong>
+
+                <small>
+                    Prize Pool
+                </small>
+
+                <span>
+                    Entry ₹10
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+    <a href="index.html">
+        🏠
+        <span>
+            Home
+        </span>
+    </a>
+
+    <a href="tournaments.html">
+        🏆
+        <span>
+            Tournaments
+        </span>
+    </a>
+
+    <a href="profile.html">
+        👤
+        <span>
+            Profile
+        </span>
+    </a>
+
+</nav>
+
+
+<script>
+
+"use strict";
+
+
+/* ==============================
+   FIND TOURNAMENT
+============================== */
+
+const findButton =
+    document.getElementById(
+        "findTournamentButton"
+    );
+
+
+if (findButton) {
+
+    findButton.addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "tournaments.html";
+
+        }
+    );
+
+}
+
+
+/* ==============================
+   CREATE ACCOUNT
+============================== */
+
+const createAccountButton =
+    document.getElementById(
+        "createAccountButton"
+    );
+
+
+if (createAccountButton) {
+
+    createAccountButton.addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "register.html";
+
+        }
+    );
+
+}
+
+
+/* ==============================
+   LOGIN
+============================== */
+
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
+
+
+if (loginButton) {
+
+    loginButton.addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+}
+
+
+/* ==============================
+   GAME TOURNAMENT BUTTONS
+============================== */
+
+const gameButtons =
+    document.querySelectorAll(
+        ".gameTournamentButton"
+    );
+
+
+gameButtons.forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const game =
+                    button.dataset.game ||
+                    "";
+
+
+                /*
+                 * Save selected game so
+                 * tournaments.html can
+                 * optionally filter it.
+                 */
+
+                localStorage.setItem(
+                    "selectedGame",
+                    game
+                );
+
+
+                window.location.href =
+                    "tournaments.html";
+
+            }
+        );
+
+    }
+);
+
+
+/* ==============================
+   UPCOMING TOURNAMENT CARDS
+============================== */
+
+const tournamentCards =
+    document.querySelectorAll(
+        ".tournament-card"
+    );
+
+
+tournamentCards.forEach(
+    function (card) {
+
+        card.style.cursor =
+            "pointer";
+
+
+        card.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "tournaments.html";
+
+            }
+        );
+
+    }
+);
+
+
+console.log(
+    "AOCA INDEX PAGE READY 🏆"
+);
+
+</script>
+
+
+</body>
+</html>

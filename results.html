@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AOCA Results</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    background:#080b12;
+    color:#fff;
+    font-family:Arial,sans-serif;
+}
+.page{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    padding:30px 16px 100px;
+}
+h1{
+    margin:0 0 8px;
+    font-size:34px;
+}
+.subtitle{
+    color:#8993a8;
+    font-size:14px;
+    margin:0 0 28px;
+}
+.card{
+    background:#111722;
+    border:1px solid #293246;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+label{
+    display:block;
+    color:#8993a8;
+    font-size:13px;
+    margin:14px 0 7px;
+}
+select{
+    width:100%;
+    height:52px;
+    padding:0 14px;
+    background:#171e2c;
+    color:#fff;
+    border:1px solid #303a4f;
+    border-radius:11px;
+    font-size:15px;
+}
+button{
+    width:100%;
+    height:52px;
+    margin-top:20px;
+    border:0;
+    border-radius:11px;
+    background:#7c8cff;
+    color:#080b12;
+    font-size:15px;
+    font-weight:900;
+}
+button:disabled{opacity:.5}
+.status{
+    margin-top:18px;
+    padding:14px;
+    border-radius:11px;
+    background:rgba(124,140,255,.1);
+    border:1px solid rgba(124,140,255,.2);
+    color:#aeb7ff;
+}
+.status.success{
+    background:rgba(70,220,130,.1);
+    border-color:rgba(70,220,130,.3);
+    color:#70e09b;
+}
+.status.error{
+    background:rgba(255,80,80,.1);
+    border-color:rgba(255,80,80,.3);
+    color:#ff8585;
+}
+.results{
+    display:none;
+}
+.results h2{
+    margin:0 0 20px;
+    font-size:28px;
+}
+.player{
+    background:#171e2c;
+    border:1px solid #293246;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:14px;
+}
+.top{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border-bottom:1px solid #293246;
+    padding-bottom:15px;
+}
+.rank{
+    width:55px;
+    height:55px;
+    min-width:55px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#20283a;
+    border-radius:17px;
+    font-size:25px;
+    font-weight:900;
+}
+.name{
+    flex:1;
+    font-size:20px;
+    font-weight:900;
+    word-break:break-word;
+}
+.uid{
+    color:#8993a8;
+    font-size:12px;
+    margin-top:5px;
+}
+.points{
+    color:#70e09b;
+    font-size:24px;
+    font-weight:900;
+    text-align:right;
+}
+.points small{
+    display:block;
+    font-size:12px;
+}
+.stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:15px;
+}
+.stat{
+    background:#0d121c;
+    border-radius:12px;
+    padding:14px;
+    text-align:center;
+}
+.stat-title{
+    color:#8993a8;
+    font-size:12px;
+    margin-bottom:8px;
+}
+.stat-value{
+    font-size:20px;
+    font-weight:900;
+}
+.empty{
+    text-align:center;
+    color:#8993a8;
+    padding:35px 10px;
+}
+@media(max-width:600px){
+    .page{padding:25px 14px 80px}
+    h1{font-size:29px}
+    .name{font-size:18px}
+    .points{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+<h1>AOCA Results</h1>
+
+<p class="subtitle">
+Tournament leaderboard and match results.
+</p>
+
+<section class="card">
+
+<label for="tournament">Tournament</label>
+
+<select id="tournament">
+<option value="">Loading tournaments...</option>
+</select>
+
+<label for="match">Match</label>
+
+<select id="match" disabled>
+<option value="">Select tournament first</option>
+</select>
+
+<button id="refresh" type="button">
+🔄 Refresh Results
+</button>
+
+<div id="status" class="status">
+Starting...
+</div>
+
+</section>
+
+<section id="resultsCard" class="card results">
+
+<h2>🏆 Leaderboard</h2>
+
+<div id="leaderboard"></div>
+
+</section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+"use strict";
+
+const db=window.supabase.createClient(
+    "https://onvcwcaimtazjlaysvvv.supabase.co",
+    "sb_publishable_cy9fyHH3PJfUwxO0FBUjVQ_kj-8ojtX"
+);
+
+const tournament=document.getElementById("tournament");
+const match=document.getElementById("match");
+const refresh=document.getElementById("refresh");
+const status=document.getElementById("status");
+const resultsCard=document.getElementById("resultsCard");
+const leaderboard=document.getElementById("leaderboard");
+
+function esc(v){
+    return String(v||"")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function setStatus(text,type){
+    status.textContent=text;
+    status.className="status";
+    if(type)status.classList.add(type);
+}
+
+function number(v){
+    const n=Number(v);
+    return Number.isFinite(n)?n:0;
+}
+
+/* LOAD TOURNAMENTS */
+
+async function loadTournaments(){
+
+    try{
+
+        const r=await db
+            .from("tournaments")
+            .select("id,name,game")
+            .order("created_at",{ascending:false});
+
+        if(r.error)throw r.error;
+
+        const list=r.data||[];
+
+        tournament.innerHTML=
+            '<option value="">Select tournament</option>';
+
+        list.forEach(t=>{
+
+            const o=document.createElement("option");
+
+            o.value=t.id;
+
+            o.textContent=
+                (t.name||"Tournament")+
+                (t.game?" - "+t.game:"");
+
+            tournament.appendChild(o);
+
+        });
+
+        if(list.length){
+            setStatus("Select a tournament.");
+        }else{
+            setStatus("No tournaments found.","error");
+        }
+
+    }catch(e){
+
+        console.error(e);
+
+        setStatus(
+            "Unable to load tournaments: "+e.message,
+            "error"
+        );
+    }
+}
+
+/* TOURNAMENT CHANGE */
+
+tournament.addEventListener("change",async()=>{
+
+    match.disabled=true;
+    refresh.disabled=true;
+    leaderboard.innerHTML="";
+    resultsCard.style.display="none";
+
+    if(!tournament.value){
+
+        match.innerHTML=
+            '<option value="">Select tournament first</option>';
+
+        setStatus("Select a tournament.");
+
+        return;
+    }
+
+    match.innerHTML=
+        '<option value="">Loading matches...</option>';
+
+    try{
+
+        const r=await db
+            .from("matches")
+            .select("id,match_number,status")
+            .eq("tournament_id",tournament.value)
+            .order("match_number",{ascending:true});
+
+        if(r.error)throw r.error;
+
+        const list=r.data||[];
+
+        match.innerHTML=
+            '<option value="">Select match</option>';
+
+        list.forEach(m=>{
+
+            const o=document.createElement("option");
+
+            o.value=m.id;
+
+            o.textContent=
+                "Match #"+
+                m.match_number+
+                " - "+
+                (m.status||"scheduled");
+
+            match.appendChild(o);
+
+        });
+
+        match.disabled=!list.length;
+
+        if(list.length){
+
+            setStatus("Select a match.");
+
+        }else{
+
+            setStatus("No matches found.","error");
+
+        }
+
+    }catch(e){
+
+        console.error(e);
+
+        match.innerHTML=
+            '<option value="">Unable to load matches</option>';
+
+        setStatus(
+            "Unable to load matches: "+e.message,
+            "error"
+        );
+    }
+});
+
+/* MATCH CHANGE */
+
+match.addEventListener("change",()=>{
+
+    refresh.disabled=!match.value;
+
+    leaderboard.innerHTML="";
+    resultsCard.style.display="none";
+
+    if(match.value)
+        loadResults();
+
+});
+
+/* LOAD RESULTS */
+
+async function loadResults(){
+
+    if(!match.value)return;
+
+    refresh.disabled=true;
+
+    setStatus("Loading results...");
+
+    try{
+
+        const r=await db
+            .from("results")
+            .select(
+                "id,user_id,team_id,placement,kills,placement_points,bonus_points,total_points"
+            )
+            .eq("match_id",match.value);
+
+        if(r.error)throw r.error;
+
+        const results=r.data||[];
+
+        /*
+         * Get player information from registrations.
+         * This avoids needing another player table.
+         */
+
+        const reg=await db
+            .from("registrations")
+            .select(
+                "user_id,team_id,in_game_name,game_uid"
+            )
+            .eq("tournament_id",tournament.value);
+
+        if(reg.error)throw reg.error;
+
+        const registrations=reg.data||[];
+
+        const players=new Map();
+
+        registrations.forEach(p=>{
+
+            const key=
+                p.user_id||
+                p.team_id||
+                p.game_uid;
+
+            players.set(String(key),p);
+
+        });
+
+        results.sort((a,b)=>
+            number(b.total_points)-
+            number(a.total_points)
+        );
+
+        renderResults(results,players);
+
+        if(results.length){
+
+            setStatus(
+                results.length+
+                " result(s) loaded.",
+                "success"
+            );
+
+        }else{
+
+            setStatus(
+                "No results have been published for this match.",
+                "error"
+            );
+
+        }
+
+    }catch(e){
+
+        console.error(
+            "AOCA RESULTS ERROR:",
+            e
+        );
+
+        resultsCard.style.display="block";
+
+        leaderboard.innerHTML=
+            '<div class="empty">Unable to load results.</div>';
+
+        setStatus(
+            "Unable to load results: "+e.message,
+            "error"
+        );
+
+    }finally{
+
+        refresh.disabled=false;
+
+    }
+}
+
+/* RENDER */
+
+function renderResults(results,players){
+
+    resultsCard.style.display="block";
+
+    leaderboard.innerHTML="";
+
+    if(!results.length){
+
+        leaderboard.innerHTML=
+            '<div class="empty">No results yet.</div>';
+
+        return;
+    }
+
+    results.forEach((r,index)=>{
+
+        let player=
+            players.get(String(r.user_id));
+
+        if(!player && r.team_id)
+            player=players.get(String(r.team_id));
+
+        player=player||{};
+
+        const row=document.createElement("div");
+
+        row.className="player";
+
+        row.innerHTML=
+
+        '<div class="top">'+
+
+            '<div class="rank">'+
+                (index+1)+
+            '</div>'+
+
+            '<div class="name">'+
+
+                esc(
+                    player.in_game_name||
+                    "Player"
+                )+
+
+                '<div class="uid">'+
+                    "UID: "+
+                    esc(
+                        player.game_uid||"-"
+                    )+
+                '</div>'+
+
+            '</div>'+
+
+            '<div class="points">'+
+                number(r.total_points)+
+                '<small>pts</small>'+
+            '</div>'+
+
+        '</div>'+
+
+        '<div class="stats">'+
+
+            '<div class="stat">'+
+                '<div class="stat-title">Placement</div>'+
+                '<div class="stat-value">'+
+                    number(r.placement)+
+                '</div>'+
+            '</div>'+
+
+            '<div class="stat">'+
+                '<div class="stat-title">Kills</div>'+
+                '<div class="stat-value">'+
+                    number(r.kills)+
+                '</div>'+
+            '</div>'+
+
+            '<div class="stat">'+
+                '<div class="stat-title">Placement Points</div>'+
+                '<div class="stat-value">'+
+                    number(r.placement_points)+
+                '</div>'+
+            '</div>'+
+
+            '<div class="stat">'+
+                '<div class="stat-title">Bonus</div>'+
+                '<div class="stat-value">'+
+                    number(r.bonus_points)+
+                '</div>'+
+            '</div>'+
+
+        '</div>';
+
+        leaderboard.appendChild(row);
+
+    });
+}
+
+/* REFRESH */
+
+refresh.addEventListener(
+    "click",
+    loadResults
+);
+
+/* START */
+
+loadTournaments();
+
+</script>
+
+</body>
+</html>
