@@ -1,0 +1,26 @@
+{
+  "name": "AOCA Tournament",
+  "short_name": "AOCA",
+  "description": "AOCA Gaming Tournament Platform",
+  "start_url": "/aoca-tournament/",
+  "scope": "/aoca-tournament/",
+  "id": "/aoca-tournament/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#7c8cff",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/aoca-tournament/icons/launchericon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/aoca-tournament/icons/launchericon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
