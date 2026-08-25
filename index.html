@@ -421,6 +421,22 @@ console.log(
 
 </script>
 
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register(
+            "/aoca-tournament/pwabuilder-sw.js",
+            {
+                scope: "/aoca-tournament/"
+            }
+        ).then(function () {
+            console.log("AOCA Service Worker registered");
+        }).catch(function (error) {
+            console.error("AOCA Service Worker error:", error);
+        });
+    });
+}
+</script>
+    
 </body>
 </html>
